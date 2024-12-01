@@ -1,55 +1,44 @@
 
-import { DIRECTION, PARTICLE_TYPES } from '../constants';
+import { PARTICLE_TYPES, Position } from '../constants';
 import Grid from '../grid';
 import { Particle } from './particle';
 
 export class Liquid extends Particle {
+  velocity = { x: 1, y: 1 };
   constructor(x: number, y: number, type = PARTICLE_TYPES.LIQUID) {
     super(x, y, type);
   }
 
-  getNextStep(previous: Grid, next: Grid): undefined | DIRECTION {
-    const neighbours = previous.getDirectNeighbors(this.position.x, this.position.y);
-    if (this.isCellEmpty(previous, next, neighbours.downPosition)) {
-      return DIRECTION.DOWN
+  getNextStep(previous: Grid, next: Grid): Position {
+    const downPosition = { ...this.position, y: this.position.y + this.velocity.y }
+    if (this.isCellEmpty(previous, next, downPosition)) {
+      return downPosition
     }
 
-    return undefined
+    for (let velocityY = this.velocity.y; velocityY >= 0; velocityY--) {
+      for (let velocityX = this.velocity.x; velocityX >= 0; velocityX--) {
+        const leftPosition = { y: this.position.y + velocityY, x: this.position.x - velocityX }
+        const rightPosition = { y: this.position.y + velocityY, x: this.position.x + velocityX }
+        if (
+          this.isCellEmpty(previous, next, leftPosition)
+          && this.isCellEmpty(previous, next, rightPosition)
+        ) {
+          return Math.random() > 0.5 ? leftPosition : rightPosition
+        }
+
+        if (this.isCellEmpty(previous, next, rightPosition)) {
+          return rightPosition
+        }
+
+        if (this.isCellEmpty(previous, next, leftPosition)) {
+          return leftPosition
+        }
+      }
+    }
+
+
+
+    return this.position
   }
 
-  getNextFallbackStep(previous: Grid, next: Grid): DIRECTION {
-    const neighbours = previous.getDirectNeighbors(this.position.x, this.position.y);
-
-    if (
-      this.isCellEmpty(previous, next, neighbours.downLeftPosition)
-      && this.isCellEmpty(previous, next, neighbours.downRightPosition)
-    ) {
-      return Math.random() > 0.5 ? DIRECTION.DOWN_LEFT : DIRECTION.DOWN_RIGHT
-    }
-
-    if (this.isCellEmpty(previous, next, neighbours.downLeftPosition)) {
-      return DIRECTION.DOWN_LEFT
-    }
-
-    if (this.isCellEmpty(previous, next, neighbours.downRightPosition)) {
-      return DIRECTION.DOWN_RIGHT
-    }
-
-    if (
-      this.isCellEmpty(previous, next, neighbours.leftPosition)
-      && this.isCellEmpty(previous, next, neighbours.rightPosition)
-    ) {
-      return Math.random() > 0.5 ? DIRECTION.LEFT : DIRECTION.RIGHT
-    }
-
-    if (this.isCellEmpty(previous, next, neighbours.rightPosition)) {
-      return DIRECTION.RIGHT
-    }
-
-    if (this.isCellEmpty(previous, next, neighbours.leftPosition)) {
-      return DIRECTION.LEFT
-    }
-
-    return DIRECTION.STILL
-  }
 }

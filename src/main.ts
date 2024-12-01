@@ -10,19 +10,25 @@ if (app) {
   const canvas = document.createElement('canvas')
 
   const sandButton = document.createElement('button')
-  const waterButton = document.createElement('button')
   sandButton.innerText = 'Sand'
+  const solidButton = document.createElement('button')
+  solidButton.innerText = 'Solid'
+  const waterButton = document.createElement('button')
   waterButton.innerText = 'Water'
 
   app.appendChild(canvas)
   app.appendChild(sandButton)
   app.appendChild(waterButton)
+  app.appendChild(solidButton)
 
   let currentType = PARTICLE_TYPES.SAND
 
 
   sandButton.addEventListener('click', () => {
     currentType = PARTICLE_TYPES.SAND
+  })
+  solidButton.addEventListener('click', () => {
+    currentType = PARTICLE_TYPES.SOLID
   })
   waterButton.addEventListener('click', () => {
     currentType = PARTICLE_TYPES.WATER

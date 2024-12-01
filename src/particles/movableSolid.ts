@@ -1,48 +1,39 @@
 
-import { DIRECTION, PARTICLE_TYPES } from '../constants';
+import { PARTICLE_TYPES, Position } from '../constants';
 import Grid from '../grid';
 import { Solid } from './solid';
 
 export class MovableSolid extends Solid {
+  velocity = { x: 1, y: 1 };
   constructor(x: number, y: number, type = PARTICLE_TYPES.MOVABLE_SOLID) {
     super(x, y, type);
   }
 
-  getNextStep(previous: Grid, next: Grid): undefined | DIRECTION {
-    const neighbours = previous.getDirectNeighbors(this.position.x, this.position.y);
+  getNextStep(previous: Grid, next: Grid): Position {
 
-    if (this.isCellEmpty(previous, next, neighbours.downPosition)) {
-      return DIRECTION.DOWN
+    const downPosition = { ...this.position, y: this.position.y + this.velocity.y }
+    if (this.isCellEmpty(previous, next, downPosition)) {
+      return downPosition
     }
 
-    return undefined
-  }
-
-  getNextFallbackStep(previous: Grid, next: Grid): DIRECTION {
-    const neighbours = previous.getDirectNeighbors(this.position.x, this.position.y);
-
-    if (this.isCellEmpty(previous, next, neighbours.downPosition)) {
-      return DIRECTION.DOWN
-    }
+    const downLeftPosition = { y: this.position.y + this.velocity.y, x: this.position.x - this.velocity.x }
+    const downRightPosition = { y: this.position.y + this.velocity.y, x: this.position.x + this.velocity.x }
 
     if (
-      this.isCellEmpty(previous, next, neighbours.downLeftPosition)
-      && this.isCellEmpty(previous, next, neighbours.downRightPosition)
+      this.isCellEmpty(previous, next, downLeftPosition)
+      && this.isCellEmpty(previous, next, downRightPosition)
     ) {
-      const rand = Math.random() > 0.5 ? DIRECTION.DOWN_LEFT : DIRECTION.DOWN_RIGHT
-      return rand
+      return Math.random() > 0.5 ? downLeftPosition : downRightPosition
     }
 
-    if (this.isCellEmpty(previous, next, neighbours.downRightPosition)) {
-      return DIRECTION.DOWN_RIGHT
+    if (this.isCellEmpty(previous, next, downRightPosition)) {
+      return downRightPosition
     }
 
-    if (this.isCellEmpty(previous, next, neighbours.downLeftPosition)) {
-      return DIRECTION.DOWN_LEFT
+    if (this.isCellEmpty(previous, next, downLeftPosition)) {
+      return downLeftPosition
     }
 
-
-
-    return DIRECTION.STILL
+    return this.position
   }
 }
