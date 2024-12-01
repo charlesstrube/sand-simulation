@@ -41,11 +41,7 @@ class Grid {
   checkNextPosition(cell: Particle, grid: Grid): DIRECTION {
     const neinhbors = grid.getDirectNeighbors(cell.position.x, cell.position.y);
 
-    if (cell.type === PARTICLE_TYPES.WATER && neinhbors?.downPosition) {
-      console.log(grid.getParticle(neinhbors?.downPosition?.x, neinhbors?.downPosition?.y))
-    }
     if (neinhbors.downPosition && !grid.getParticle(neinhbors.downPosition.x, neinhbors.downPosition.y)) {
-
       return DIRECTION.DOWN
     }
 
@@ -174,7 +170,9 @@ class Grid {
   }
 
   isOutOfBounds(x: number, y: number) {
-    return x < 0 || x >= WIDTH || y < 0 || y >= WIDTH
+
+
+    return x < 0 || x > WIDTH - 1 || y < 0 || y > HEIGHT - 1
   }
 
   getColor(type: PARTICLE_TYPES) {
@@ -216,20 +214,14 @@ class Grid {
 
   getDirectNeighbors(x: number, y: number): Neighbors {
 
-    const isRightEdge = x >= WIDTH - 1;
-    const isLeftEdge = x <= 0;
-    const isDownEdge = y >= HEIGHT - 1;
-    const isUpEdge = y <= 0;
-
-
-    const up = isUpEdge ? undefined : { x, y: y - 1 };
-    const down = isDownEdge ? undefined : { x, y: y + 1 };
-    const left = isLeftEdge ? undefined : { x: x - 1, y };
-    const right = isRightEdge ? undefined : { x: x + 1, y };
-    const upLeft = isLeftEdge ? undefined : { x: x - 1, y: y - 1 };
-    const upRight = isRightEdge ? undefined : { x: x + 1, y: y - 1 };
-    const downLeft = x - 1 < 0 || y + 1 >= HEIGHT - 1 ? undefined : { x: x - 1, y: y + 1 };
-    const downRight = x + 1 > WIDTH || y + 1 >= HEIGHT ? undefined : { x: x + 1, y: y + 1 };
+    const up = this.isOutOfBounds(x, y - 1) ? undefined : { x, y: y - 1 };
+    const down = this.isOutOfBounds(x, y + 1) ? undefined : { x, y: y + 1 };
+    const left = this.isOutOfBounds(x - 1, y) ? undefined : { x: x - 1, y };
+    const right = this.isOutOfBounds(x + 1, y) ? undefined : { x: x + 1, y };
+    const upLeft = this.isOutOfBounds(x - 1, y - 1) ? undefined : { x: x - 1, y: y - 1 };
+    const upRight = this.isOutOfBounds(x + 1, y - 1) ? undefined : { x: x + 1, y: y - 1 };
+    const downLeft = this.isOutOfBounds(x - 1, y + 1) ? undefined : { x: x - 1, y: y + 1 };
+    const downRight = this.isOutOfBounds(x + 1, y + 1) ? undefined : { x: x + 1, y: y + 1 };
 
     return {
       upPosition: up,

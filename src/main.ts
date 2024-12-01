@@ -55,6 +55,16 @@ if (app) {
     y = Math.floor(event.offsetY / CELL_SIZE)
   })
 
+  const fps = 60;
+  const fpsInterval = 1000 / fps
+  let now = Date.now()
+  let then = now
+  let elapsed;
+
+
+  // initialize the timer variables and start the animation
+
+
 
   const context = canvas.getContext('2d')
   if (context) {
@@ -63,33 +73,53 @@ if (app) {
     let grid = new Grid(HEIGHT, WIDTH)
 
     const loop = () => {
-      const newGrid = new Grid(HEIGHT, WIDTH)
 
-      newGrid.addNextGeneration(grid)
+      window.requestAnimationFrame(loop)
+      // calc elapsed time since last loop
 
-      if (holding && x !== undefined && y !== undefined) {
-        newGrid.addParticle(x, y, currentType)
+      now = Date.now();
+      elapsed = now - then;
+
+      // if enough time has elapsed, draw the next frame
+
+      if (elapsed > fpsInterval) {
+
+        // Get ready for next frame by setting then=now, but also adjust for your
+        // specified fpsInterval not being a multiple of RAF's interval (16.7ms)
+        then = now - (elapsed % fpsInterval);
+
+        // Put your drawing code here
+
+        const newGrid = new Grid(HEIGHT, WIDTH)
+
+        newGrid.addNextGeneration(grid)
+
+        if (holding && x !== undefined && y !== undefined) {
+          newGrid.addParticle(x, y, currentType)
+        }
+
+
+        context.clearRect(0, 0, canvas.width, canvas.height)
+        context.fillStyle = 'black'
+        context.fillRect(0, 0, CELL_SIZE * WIDTH, CELL_SIZE * HEIGHT)
+        context.restore()
+        newGrid.cells.forEach(cell => {
+          if (!cell) {
+            return
+          }
+          if (cell.color)
+            context.fillStyle = cell.color
+          context.fillRect(cell.position.x, cell.position.y, 1, 1)
+          context.restore()
+        })
+        grid = newGrid
+
       }
 
-
-      context.clearRect(0, 0, canvas.width, canvas.height)
-      context.fillStyle = 'black'
-      context.fillRect(0, 0, CELL_SIZE * WIDTH, CELL_SIZE * HEIGHT)
-      context.restore()
-      newGrid.cells.forEach(cell => {
-        if (!cell) {
-          return
-        }
-        if (cell.color)
-          context.fillStyle = cell.color
-        context.fillRect(cell.position.x, cell.position.y, CELL_SIZE, CELL_SIZE)
-        context.restore()
-      })
-      grid = newGrid
-      window.requestAnimationFrame(loop)
     }
 
-    loop()
+    loop();
+
   }
 
 }

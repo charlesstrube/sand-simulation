@@ -1,7 +1,7 @@
 
-export const HEIGHT = 40
-export const WIDTH = 40
-export const CELL_SIZE = 10
+export const HEIGHT = 100
+export const WIDTH = 100
+export const CELL_SIZE = 6
 export const sandColors = ['#fff2f9', '#f2d2a9'];
 export const waterColors = ['#a2d2ff', '#4682b4'];
 export enum PARTICLE_TYPES {
