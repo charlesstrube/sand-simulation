@@ -8,28 +8,40 @@ export class MovableSolid extends Solid {
     super(x, y, type);
   }
 
-  getNextStep(previous: Grid, next: Grid): DIRECTION {
-    const neinhbors = previous.getDirectNeighbors(this.position.x, this.position.y);
+  getNextStep(previous: Grid, next: Grid): undefined | DIRECTION {
+    const neighbours = previous.getDirectNeighbors(this.position.x, this.position.y);
 
-    if (this.isCellEmpty(previous, next, neinhbors.downPosition)) {
+    if (this.isCellEmpty(previous, next, neighbours.downPosition)) {
+      return DIRECTION.DOWN
+    }
+
+    return undefined
+  }
+
+  getNextFallbackStep(previous: Grid, next: Grid): DIRECTION {
+    const neighbours = previous.getDirectNeighbors(this.position.x, this.position.y);
+
+    if (this.isCellEmpty(previous, next, neighbours.downPosition)) {
       return DIRECTION.DOWN
     }
 
     if (
-      this.isCellEmpty(previous, next, neinhbors.downLeftPosition)
-      && this.isCellEmpty(previous, next, neinhbors.downRightPosition)
+      this.isCellEmpty(previous, next, neighbours.downLeftPosition)
+      && this.isCellEmpty(previous, next, neighbours.downRightPosition)
     ) {
-      return Math.random() > 0.5 ? DIRECTION.DOWN_LEFT : DIRECTION.DOWN_RIGHT
+      const rand = Math.random() > 0.5 ? DIRECTION.DOWN_LEFT : DIRECTION.DOWN_RIGHT
+      return rand
     }
 
-    if (this.isCellEmpty(previous, next, neinhbors.downLeftPosition)) {
+    if (this.isCellEmpty(previous, next, neighbours.downRightPosition)) {
+      return DIRECTION.DOWN_RIGHT
+    }
+
+    if (this.isCellEmpty(previous, next, neighbours.downLeftPosition)) {
       return DIRECTION.DOWN_LEFT
     }
 
-    if (this.isCellEmpty(previous, next, neinhbors.downRightPosition)) {
-      console.log('down right')
-      return DIRECTION.DOWN_RIGHT
-    }
+
 
     return DIRECTION.STILL
   }

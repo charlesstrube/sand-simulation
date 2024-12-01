@@ -61,10 +61,8 @@ export function createParticleFromPosition(x: number, y: number, type: PARTICLE_
   switch (type) {
     case PARTICLE_TYPES.WATER:
       return new Water(x, y)
-      break;
     case PARTICLE_TYPES.SAND:
       return new Sand(x, y)
-      break
     default:
       return new Particle(x, y, type)
   }

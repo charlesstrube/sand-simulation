@@ -28,8 +28,6 @@ if (app) {
     currentType = PARTICLE_TYPES.WATER
   })
 
-
-
   const ratio = window.devicePixelRatio
 
   canvas.width = WIDTH * ratio;
@@ -55,7 +53,7 @@ if (app) {
     y = Math.floor(event.offsetY / CELL_SIZE)
   })
 
-  const fps = 60;
+  const fps = 120;
   const fpsInterval = 1000 / fps
   let now = Date.now()
   let then = now

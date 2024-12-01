@@ -7,19 +7,25 @@ export class Particle {
   color?: string;
   velocity: { x: number, y: number } = { x: 0, y: 0 };
   type: PARTICLE_TYPES = PARTICLE_TYPES.MOVABLE_SOLID;
+  nextStep: DIRECTION | undefined = undefined;
   constructor(x: number, y: number, type: PARTICLE_TYPES) {
     this.position = { x, y };
     this.type = type;
   }
 
   isCellEmpty(previous: Grid, next: Grid, position?: Position) {
-    return position
+    return Boolean(position
       && !previous.getParticle(position.x, position.y)
-      && !next.getParticle(position.x, position.y)
+      && !next.getParticle(position.x, position.y))
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  getNextStep(grid: Grid, next: Grid): DIRECTION {
+  getNextStep(grid: Grid, next: Grid): DIRECTION | undefined {
+    return DIRECTION.STILL
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  getNextFallbackStep(grid: Grid, next: Grid): DIRECTION {
     return DIRECTION.STILL
   }
 }

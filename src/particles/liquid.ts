@@ -8,41 +8,45 @@ export class Liquid extends Particle {
     super(x, y, type);
   }
 
-  getNextStep(previous: Grid, next: Grid): DIRECTION {
-
-    const neinhbors = previous.getDirectNeighbors(this.position.x, this.position.y);
-
-    if (this.isCellEmpty(previous, next, neinhbors.downPosition)) {
+  getNextStep(previous: Grid, next: Grid): undefined | DIRECTION {
+    const neighbours = previous.getDirectNeighbors(this.position.x, this.position.y);
+    if (this.isCellEmpty(previous, next, neighbours.downPosition)) {
       return DIRECTION.DOWN
     }
 
+    return undefined
+  }
+
+  getNextFallbackStep(previous: Grid, next: Grid): DIRECTION {
+    const neighbours = previous.getDirectNeighbors(this.position.x, this.position.y);
+
     if (
-      this.isCellEmpty(previous, next, neinhbors.downLeftPosition)
-      && this.isCellEmpty(previous, next, neinhbors.downRightPosition)
+      this.isCellEmpty(previous, next, neighbours.downLeftPosition)
+      && this.isCellEmpty(previous, next, neighbours.downRightPosition)
     ) {
       return Math.random() > 0.5 ? DIRECTION.DOWN_LEFT : DIRECTION.DOWN_RIGHT
     }
 
-    if (this.isCellEmpty(previous, next, neinhbors.downLeftPosition)) {
+    if (this.isCellEmpty(previous, next, neighbours.downLeftPosition)) {
       return DIRECTION.DOWN_LEFT
     }
 
-    if (this.isCellEmpty(previous, next, neinhbors.downRightPosition)) {
+    if (this.isCellEmpty(previous, next, neighbours.downRightPosition)) {
       return DIRECTION.DOWN_RIGHT
     }
 
     if (
-      this.isCellEmpty(previous, next, neinhbors.leftPosition)
-      && this.isCellEmpty(previous, next, neinhbors.rightPosition)
+      this.isCellEmpty(previous, next, neighbours.leftPosition)
+      && this.isCellEmpty(previous, next, neighbours.rightPosition)
     ) {
       return Math.random() > 0.5 ? DIRECTION.LEFT : DIRECTION.RIGHT
     }
 
-    if (this.isCellEmpty(previous, next, neinhbors.rightPosition)) {
+    if (this.isCellEmpty(previous, next, neighbours.rightPosition)) {
       return DIRECTION.RIGHT
     }
 
-    if (this.isCellEmpty(previous, next, neinhbors.leftPosition)) {
+    if (this.isCellEmpty(previous, next, neighbours.leftPosition)) {
       return DIRECTION.LEFT
     }
 

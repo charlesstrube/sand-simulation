@@ -56,6 +56,71 @@ class Grid {
     this.cells[index] = undefined
   }
 
+  commitChanges(previousCell: Particle) {
+    const position = previousCell.position
+    const nextPosition = previousCell.nextStep
+    const currentNeighbors = this.getDirectNeighbors(position.x, position.y);
+
+    switch (nextPosition) {
+      case DIRECTION.DOWN: {
+        if (currentNeighbors.downPosition) {
+          const down = this.createParticleFromPosition(
+            currentNeighbors.downPosition,
+            previousCell.type
+          );
+          down.color = previousCell.color;
+        }
+        break;
+      }
+      case DIRECTION.DOWN_LEFT: {
+        if (currentNeighbors.downLeftPosition) {
+          const downLeft = this.createParticleFromPosition(
+            currentNeighbors.downLeftPosition,
+            previousCell.type
+          );
+          downLeft.color = previousCell.color;
+        }
+        break;
+      }
+      case DIRECTION.DOWN_RIGHT: {
+        if (currentNeighbors.downRightPosition) {
+          const downRight = this.createParticleFromPosition(
+            currentNeighbors.downRightPosition,
+            previousCell.type
+          );
+          downRight.color = previousCell.color;
+        }
+        break;
+      }
+      case DIRECTION.RIGHT: {
+        if (currentNeighbors.rightPosition) {
+          const right = this.createParticleFromPosition(
+            currentNeighbors.rightPosition,
+            previousCell.type
+          );
+          right.color = previousCell.color;
+        }
+        break;
+      }
+      case DIRECTION.LEFT: {
+        if (currentNeighbors.leftPosition) {
+          const left = this.createParticleFromPosition(
+            currentNeighbors.leftPosition,
+            previousCell.type
+          );
+          left.color = previousCell.color;
+        }
+        break;
+      }
+      case DIRECTION.STILL: {
+        const still = this.createParticleFromPosition(position, previousCell.type)
+        still.color = previousCell.color;
+        break;
+      }
+      default:
+    }
+  }
+
   addNextGeneration(previousGrid: Grid) {
     this.colorDirection = previousGrid.colorDirection
     if (previousGrid.colorIndex >= 100) {
@@ -66,75 +131,23 @@ class Grid {
     }
 
     this.colorIndex = this.colorDirection ? previousGrid.colorIndex + .1 : previousGrid.colorIndex - .1
-    previousGrid.cells.forEach((previousCell) => {
-      if (previousCell) {
 
-        const position = previousCell.position
+    const cells = previousGrid.cells
+      .filter<Particle>((cell): cell is Particle => Boolean(cell))
 
-        const nextPosition = previousCell.getNextStep(previousGrid, this)
-        const currentNeighbors = this.getDirectNeighbors(position.x, position.y);
 
-        switch (nextPosition) {
-          case DIRECTION.DOWN: {
-            if (currentNeighbors.downPosition) {
-              const down = this.createParticleFromPosition(
-                currentNeighbors.downPosition,
-                previousCell.type
-              );
-              down.color = previousCell.color;
-            }
-            break;
-          }
-          case DIRECTION.DOWN_LEFT: {
-            if (currentNeighbors.downLeftPosition) {
-              const downLeft = this.createParticleFromPosition(
-                currentNeighbors.downLeftPosition,
-                previousCell.type
-              );
-              downLeft.color = previousCell.color;
-            }
-            break;
-          }
-          case DIRECTION.DOWN_RIGHT: {
-            if (currentNeighbors.downRightPosition) {
-              const downRight = this.createParticleFromPosition(
-                currentNeighbors.downRightPosition,
-                previousCell.type
-              );
-              downRight.color = previousCell.color;
-            }
-            break;
-          }
-          case DIRECTION.RIGHT: {
-            if (currentNeighbors.rightPosition) {
-              const right = this.createParticleFromPosition(
-                currentNeighbors.rightPosition,
-                previousCell.type
-              );
-              right.color = previousCell.color;
-            }
-            break;
-          }
-          case DIRECTION.LEFT: {
-            if (currentNeighbors.leftPosition) {
-              const left = this.createParticleFromPosition(
-                currentNeighbors.leftPosition,
-                previousCell.type
-              );
-              left.color = previousCell.color;
-            }
-            break;
-          }
-          case DIRECTION.STILL: {
-            const still = this.createParticleFromPosition(position, previousCell.type)
-            still.color = previousCell.color;
-            break;
-          }
-          default:
-        }
-
+    cells.forEach((previousCell) => {
+      previousCell.nextStep = previousCell.getNextStep(previousGrid, this)
+      this.commitChanges(previousCell)
+    })
+    cells.forEach((previousCell) => {
+      if (!previousCell.nextStep) {
+        previousCell.nextStep = previousCell.getNextFallbackStep(previousGrid, this)
+        this.commitChanges(previousCell)
       }
     })
+
+
   }
 
   isOutOfBounds(x: number, y: number) {
