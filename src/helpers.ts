@@ -1,4 +1,4 @@
-import { sandColors } from "./constants";
+import { sandColors, waterColors } from "./constants";
 
 
 // extract numeric r, g, b values from `rgb(nn, nn, nn)` string
@@ -29,8 +29,20 @@ function colorInterpolate(colorA: string, colorB: string, intval: number) {
 }
 
 
-export function doit(progression: number) {
+export function getSandColor(progression: number) {
   const [color1, color2] = sandColors
+
+  const rgbNew = colorInterpolate(
+    color1,
+    color2,
+    progression
+  );
+
+  return `#${rgbNew.r}${rgbNew.g}${rgbNew.b}`;
+}
+
+export function getWaterColor(progression: number) {
+  const [color1, color2] = waterColors
 
   const rgbNew = colorInterpolate(
     color1,

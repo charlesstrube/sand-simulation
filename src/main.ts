@@ -1,4 +1,4 @@
-import { CELL_SIZE, HEIGHT, WIDTH } from './constants'
+import { CELL_SIZE, HEIGHT, WIDTH, PARTICLE_TYPES } from './constants'
 import Grid from './grid'
 import './style.css'
 
@@ -8,7 +8,27 @@ const app = document.querySelector<HTMLDivElement>('#app')
 
 if (app) {
   const canvas = document.createElement('canvas')
+
+  const sandButton = document.createElement('button')
+  const waterButton = document.createElement('button')
+  sandButton.innerText = 'Sand'
+  waterButton.innerText = 'Water'
+
   app.appendChild(canvas)
+  app.appendChild(sandButton)
+  app.appendChild(waterButton)
+
+  let currentType = PARTICLE_TYPES.SAND
+
+
+  sandButton.addEventListener('click', () => {
+    currentType = PARTICLE_TYPES.SAND
+  })
+  waterButton.addEventListener('click', () => {
+    currentType = PARTICLE_TYPES.WATER
+  })
+
+
 
   const ratio = window.devicePixelRatio
 
@@ -48,7 +68,7 @@ if (app) {
       newGrid.addNextGeneration(grid)
 
       if (holding && x !== undefined && y !== undefined) {
-        newGrid.addSand(x, y)
+        newGrid.addParticle(x, y, currentType)
       }
 
 

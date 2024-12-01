@@ -1,7 +1,8 @@
-import { HEIGHT, Position, WIDTH } from "./constants";
-import { doit } from "./helpers";
-import { MovableSolid } from "./particles/movableSolid";
+import { HEIGHT, PARTICLE_TYPES, Position, WIDTH } from "./constants";
+import { getSandColor, getWaterColor } from "./helpers";
 import { Particle } from "./particles/particle";
+import { Sand } from "./particles/sand";
+import { Water } from "./particles/water";
 
 
 interface Neighbors {
@@ -37,26 +38,37 @@ class Grid {
 
 
 
-  checkNextPosition(previousNeighbors: Neighbors, previousGrid: Grid): DIRECTION {
+  checkNextPosition(cell: Particle, grid: Grid): DIRECTION {
+    const neinhbors = grid.getDirectNeighbors(cell.position.x, cell.position.y);
 
-    if (previousNeighbors.downPosition && !previousGrid.getParticle(previousNeighbors.downPosition.x, previousNeighbors.downPosition.y)) {
+    if (cell.type === PARTICLE_TYPES.WATER && neinhbors?.downPosition) {
+      console.log(grid.getParticle(neinhbors?.downPosition?.x, neinhbors?.downPosition?.y))
+    }
+    if (neinhbors.downPosition && !grid.getParticle(neinhbors.downPosition.x, neinhbors.downPosition.y)) {
+
       return DIRECTION.DOWN
     }
 
     if (
-      previousNeighbors.downLeftPosition
-      && previousNeighbors.downRightPosition
-      && !previousGrid.getParticle(previousNeighbors.downLeftPosition.x, previousNeighbors.downLeftPosition.y)
-      && !previousGrid.getParticle(previousNeighbors.downRightPosition.x, previousNeighbors.downRightPosition.y)
+      neinhbors.downLeftPosition
+      && neinhbors.downRightPosition
+      && !grid.getParticle(neinhbors.downLeftPosition.x, neinhbors.downLeftPosition.y)
+      && !grid.getParticle(neinhbors.downRightPosition.x, neinhbors.downRightPosition.y)
     ) {
       return Math.random() > 0.5 ? DIRECTION.DOWN_LEFT : DIRECTION.DOWN_RIGHT
     }
 
-    if (previousNeighbors.downLeftPosition && !previousGrid.getParticle(previousNeighbors.downLeftPosition.x, previousNeighbors.downLeftPosition.y)) {
+    if (
+      neinhbors.downLeftPosition
+      && !grid.getParticle(neinhbors.downLeftPosition.x, neinhbors.downLeftPosition.y)
+    ) {
       return DIRECTION.DOWN_LEFT
     }
 
-    if (previousNeighbors.downRightPosition && !previousGrid.getParticle(previousNeighbors.downRightPosition.x, previousNeighbors.downRightPosition.y)) {
+    if (
+      neinhbors.downRightPosition
+      && !grid.getParticle(neinhbors.downRightPosition.x, neinhbors.downRightPosition.y)
+    ) {
       return DIRECTION.DOWN_RIGHT
     }
 
@@ -75,18 +87,27 @@ class Grid {
     }
   }
 
-  createMovableSolidFromPosition(x: number, y: number): MovableSolid {
+  createParticleFromPosition(x: number, y: number, type: PARTICLE_TYPES): Particle {
     const index = this.getIndexFromPosition(x, y)
     if (this.cells[index] === undefined) {
-      this.cells[index] = new MovableSolid(x, y)
+      switch (type) {
+        case PARTICLE_TYPES.WATER:
+          this.cells[index] = new Water(x, y)
+          break;
+        case PARTICLE_TYPES.SAND:
+          this.cells[index] = new Sand(x, y)
+          break
+        default:
+          this.cells[index] = new Particle(x, y, type)
+      }
     }
-
     return this.cells[index]
+
   }
 
-  createMovableSolidFromIndex(index: number): MovableSolid {
+  createParticleFromIndex(index: number, type: PARTICLE_TYPES): Particle {
     const position = this.getPositionFromIndex(index)
-    return this.createMovableSolidFromPosition(position.x, position.y)
+    return this.createParticleFromPosition(position.x, position.y, type)
   }
 
   deleteParticle(x: number, y: number) {
@@ -104,43 +125,47 @@ class Grid {
     }
 
     this.colorIndex = this.colorDirection ? previousGrid.colorIndex + .1 : previousGrid.colorIndex - .1
-    previousGrid.cells.forEach((previousCell, i) => {
+    previousGrid.cells.forEach((previousCell) => {
       if (previousCell) {
 
-        const previousNeighbors = previousGrid.getDirectNeighbors(previousCell.position.x, previousCell.position.y);
-        const position = this.checkNextPosition(previousNeighbors, previousGrid);
-        const currentNeighbors = this.getDirectNeighbors(previousCell.position.x, previousCell.position.y);
+        const position = previousCell.position
+        const nextPosition = this.checkNextPosition(previousCell, previousGrid);
+        const currentNeighbors = this.getDirectNeighbors(position.x, position.y);
 
-        switch (position) {
-          case DIRECTION.DOWN:
-            this.deleteParticle(previousCell.position.x, previousCell.position.y)
+        switch (nextPosition) {
+          case DIRECTION.DOWN: {
+            this.deleteParticle(position.x, position.y)
             if (currentNeighbors.downPosition) {
-              const down = this.createMovableSolidFromPosition(currentNeighbors.downPosition.x, currentNeighbors.downPosition.y);
+              const down = this.createParticleFromPosition(currentNeighbors.downPosition.x, currentNeighbors.downPosition.y, previousCell.type);
               down.color = previousCell.color;
             }
 
             break;
-          case DIRECTION.DOWN_LEFT:
-            this.deleteParticle(previousCell.position.x, previousCell.position.y)
+          }
+          case DIRECTION.DOWN_LEFT: {
+            this.deleteParticle(position.x, position.y)
 
             if (currentNeighbors.downLeftPosition) {
 
-              const downLeft = this.createMovableSolidFromPosition(currentNeighbors.downLeftPosition.x, currentNeighbors.downLeftPosition.y);
+              const downLeft = this.createParticleFromPosition(currentNeighbors.downLeftPosition.x, currentNeighbors.downLeftPosition.y, previousCell.type);
               downLeft.color = previousCell.color;
             }
             break;
-          case DIRECTION.DOWN_RIGHT:
-            this.deleteParticle(previousCell.position.x, previousCell.position.y)
+          }
+          case DIRECTION.DOWN_RIGHT: {
+            this.deleteParticle(position.x, position.y)
 
             if (currentNeighbors.downRightPosition) {
-              const downRight = this.createMovableSolidFromPosition(currentNeighbors.downRightPosition.x, currentNeighbors.downRightPosition.y);
+              const downRight = this.createParticleFromPosition(currentNeighbors.downRightPosition.x, currentNeighbors.downRightPosition.y, previousCell.type);
               downRight.color = previousCell.color;
             }
             break;
-          case DIRECTION.STILL:
-            const still = this.createMovableSolidFromPosition(previousCell.position.x, previousCell.position.y)
+          }
+          case DIRECTION.STILL: {
+            const still = this.createParticleFromPosition(position.x, position.y, previousCell.type)
             still.color = previousCell.color;
             break;
+          }
           default:
         }
 
@@ -152,23 +177,33 @@ class Grid {
     return x < 0 || x >= WIDTH || y < 0 || y >= WIDTH
   }
 
-  addSand(x: number, y: number) {
+  getColor(type: PARTICLE_TYPES) {
+    switch (type) {
+      case PARTICLE_TYPES.SAND:
+        return getSandColor(this.colorIndex / 100)
+      case PARTICLE_TYPES.WATER:
+        return getWaterColor(this.colorIndex / 100)
+      default:
+        return '#ffffff'
+    }
+  }
 
+  addParticle(x: number, y: number, type: PARTICLE_TYPES) {
     if (this.isOutOfBounds(x, y)) {
       return
     }
     const { leftPosition, rightPosition } = this.getDirectNeighbors(x, y);
-    const currentCell = this.createMovableSolidFromPosition(x, y);
-    const color = doit(this.colorIndex / 100)
+    const currentCell = this.createParticleFromPosition(x, y, type);
+    const color = this.getColor(type)
 
     currentCell.color = color;
 
     if (leftPosition) {
-      const left = this.createMovableSolidFromPosition(currentCell.position.x, currentCell.position.y);
+      const left = this.createParticleFromPosition(leftPosition.x, leftPosition.y, type);
       left.color = color;
     }
     if (rightPosition) {
-      const right = this.createMovableSolidFromPosition(currentCell.position.x, currentCell.position.y);
+      const right = this.createParticleFromPosition(rightPosition.x, rightPosition.y, type);
       right.color = color;
     }
   }
