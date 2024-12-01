@@ -51,7 +51,7 @@ if (app) {
         if (cell.alive) {
           if (cell.color)
             context.fillStyle = cell.color
-          context.fillRect(cell.x, cell.y, CELL_SIZE, CELL_SIZE)
+          context.fillRect(cell.position.x, cell.position.y, CELL_SIZE, CELL_SIZE)
           context.restore()
         }
       })

@@ -1,64 +1,17 @@
 import { WIDTH } from "./constants";
+import { doit } from "./helpers";
+import { Particle } from "./particle";
 
-interface Cell {
-  alive: boolean;
-  x: number;
-  y: number;
-  index: number;
-  color?: string;
-}
 
 interface Neighbors {
-  up?: Cell;
-  down?: Cell;
-  left?: Cell;
-  right?: Cell;
-  upLeft?: Cell;
-  upRight?: Cell;
-  downLeft?: Cell;
-  downRight?: Cell;
-}
-
-const sandColors = ['#fff2f9', '#f2d2a9'];
-
-// extract numeric r, g, b values from `rgb(nn, nn, nn)` string
-function getRgb(color: string) {
-  const bigint = parseInt(color.slice(1), 16);
-  const r = (bigint >> 16) & 255;
-  const g = (bigint >> 8) & 255;
-  const b = bigint & 255;
-
-  return {
-    r,
-    g,
-    b
-  }
-}
-
-function colorInterpolate(colorA: string, colorB: string, intval: number) {
-  const rgbA = getRgb(colorA);
-  const rgbB = getRgb(colorB);
-  const colorVal = (prop: 'r' | 'g' | 'b') =>
-    Math.round(rgbA[prop] * (1 - intval) + rgbB[prop] * intval);
-
-  return {
-    r: colorVal('r').toString(16),
-    g: colorVal('g').toString(16),
-    b: colorVal('b').toString(16),
-  }
-}
-
-
-function doit(progression: number) {
-  const [color1, color2] = sandColors
-
-  const rgbNew = colorInterpolate(
-    color1,
-    color2,
-    progression
-  );
-
-  return `#${rgbNew.r}${rgbNew.g}${rgbNew.b}`;
+  up?: Particle;
+  down?: Particle;
+  left?: Particle;
+  right?: Particle;
+  upLeft?: Particle;
+  upRight?: Particle;
+  downLeft?: Particle;
+  downRight?: Particle;
 }
 
 class Grid {
@@ -66,19 +19,15 @@ class Grid {
   colorIndex = 0;
   colorDirection = true;
 
-  cells: Cell[] = [];
+  cells: Particle[] = [];
   constructor(height: number, width: number) {
-
-
     this.cells = Array.from({ length: height * width })
       .fill(undefined)
-      .map((_, i) => ({
-        x: i % width,
-        y: Math.floor(i / width),
-        alive: false,
-        index: i,
-        color: undefined
-      }))
+      .map((_, i) => {
+        const particle = new Particle(i % width, Math.floor(i / width), i);
+
+        return particle
+      })
   }
 
   checkNextPosition(previousNeighbors: Neighbors) {
@@ -117,9 +66,9 @@ class Grid {
       if (previousCell.alive) {
         const currentCell = this.cells[i];
 
-        const previousNeighbors = previousGrid.getNeighbors(previousCell.x, previousCell.y);
+        const previousNeighbors = previousGrid.getNeighbors(previousCell.position.x, previousCell.position.y);
         const position = this.checkNextPosition(previousNeighbors);
-        const currentNeighbors = this.getNeighbors(previousCell.x, previousCell.y);
+        const currentNeighbors = this.getNeighbors(previousCell.position.x, previousCell.position.y);
 
         switch (position) {
           case 'down':
@@ -155,41 +104,41 @@ class Grid {
   }
 
   addSand(x: number, y: number) {
-    const nextIndex = x + y * WIDTH
     const currentNeighbors = this.getNeighbors(x, y);
-    const currentCell = this.cells[nextIndex];
+    const currentCell = this.getParticle(x, y);
     const { left, right } = currentNeighbors;
     const color = doit(this.colorIndex / 100)
-    currentCell.alive = true;
-    currentCell.color = color;
-    if (left) {
+    if (!currentCell.alive) {
+      currentCell.alive = true;
+      currentCell.color = color;
+    }
+    if (left && left.alive === false) {
       left.alive = true;
       left.color = color;
     }
-    if (right) {
+    if (right && right.alive === false) {
       right.alive = true;
       right.color = color;
     }
+  }
 
+  getParticle(x: number, y: number): Particle {
+    const index = x + y * WIDTH
 
-
+    return this.cells[index]
   }
 
   getNeighbors(x: number, y: number): Neighbors {
-
-
-    const up = this.cells[WIDTH * (y - 1) + x];
-    const down = this.cells[WIDTH * (y + 1) + x];
+    const up = this.getParticle(x, y - 1);
+    const down = this.getParticle(x, y + 1);
     const isRightEdge = x === WIDTH - 1;
     const isLeftEdge = x === 0;
-    const left = isLeftEdge ? undefined : this.cells[WIDTH * y + x - 1];
-    const right = isRightEdge ? undefined : this.cells[WIDTH * y + x + 1];
-    const upLeft = isLeftEdge ? undefined : this.cells[WIDTH * (y - 1) + x - 1];
-    const upRight = isRightEdge ? undefined : this.cells[WIDTH * (y - 1) + x + 1];
-    const downLeft = isLeftEdge ? undefined : this.cells[WIDTH * (y + 1) + x - 1];
-    const downRight = isRightEdge ? undefined : this.cells[WIDTH * (y + 1) + x + 1];
-
-
+    const left = isLeftEdge ? undefined : this.getParticle(x - 1, y);
+    const right = isRightEdge ? undefined : this.getParticle(x + 1, y);
+    const upLeft = isLeftEdge ? undefined : this.getParticle(x - 1, y - 1);
+    const upRight = isRightEdge ? undefined : this.getParticle(x + 1, y - 1);
+    const downLeft = isLeftEdge ? undefined : this.getParticle(x - 1, y + 1);
+    const downRight = isRightEdge ? undefined : this.getParticle(x + 1, y + 1);
 
     return {
       up,
