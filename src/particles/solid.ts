@@ -1,5 +1,6 @@
 
 import { PARTICLE_TYPES } from '../constants';
+
 import { Particle } from './particle';
 
 export class Solid extends Particle {

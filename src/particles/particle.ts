@@ -1,5 +1,5 @@
-import { PARTICLE_TYPES } from "../constants";
-
+import { DIRECTION, PARTICLE_TYPES, Position } from "../constants";
+import Grid from "../grid";
 
 
 export class Particle {
@@ -10,5 +10,16 @@ export class Particle {
   constructor(x: number, y: number, type: PARTICLE_TYPES) {
     this.position = { x, y };
     this.type = type;
+  }
+
+  isCellEmpty(previous: Grid, next: Grid, position?: Position) {
+    return position
+      && !previous.getParticle(position.x, position.y)
+      && !next.getParticle(position.x, position.y)
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  getNextStep(grid: Grid, next: Grid): DIRECTION {
+    return DIRECTION.STILL
   }
 }

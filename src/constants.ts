@@ -3,7 +3,7 @@ export const HEIGHT = 100
 export const WIDTH = 100
 export const CELL_SIZE = 6
 export const sandColors = ['#fff2f9', '#f2d2a9'];
-export const waterColors = ['#a2d2ff', '#4682b4'];
+export const waterColors = ['#4682b4', '#00bdf7'];
 export enum PARTICLE_TYPES {
   MOVABLE_SOLID = 'MOVABLE_SOLID',
   IMMOVABLE_SOLID = 'IMMOVABLE_SOLID',
@@ -16,4 +16,13 @@ export enum PARTICLE_TYPES {
 export interface Position {
   x: number;
   y: number;
+}
+
+export enum DIRECTION {
+  DOWN = 'DOWN',
+  DOWN_LEFT = 'DOWN_LEFT',
+  DOWN_RIGHT = 'DOWN_RIGHT',
+  RIGHT = 'RIGHT',
+  LEFT = 'LEFT',
+  STILL = 'STILL',
 }

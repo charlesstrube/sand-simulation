@@ -1,4 +1,7 @@
-import { sandColors, waterColors } from "./constants";
+import { PARTICLE_TYPES, sandColors, waterColors } from "./constants";
+import { Particle } from "./particles/particle";
+import { Sand } from "./particles/sand";
+import { Water } from "./particles/water";
 
 
 // extract numeric r, g, b values from `rgb(nn, nn, nn)` string
@@ -18,16 +21,17 @@ function getRgb(color: string) {
 function colorInterpolate(colorA: string, colorB: string, intval: number) {
   const rgbA = getRgb(colorA);
   const rgbB = getRgb(colorB);
-  const colorVal = (prop: 'r' | 'g' | 'b') =>
-    Math.round(rgbA[prop] * (1 - intval) + rgbB[prop] * intval);
+  const colorVal = (prop: 'r' | 'g' | 'b') => {
+    const col = Math.round(rgbA[prop] * (1 - intval) + rgbB[prop] * intval);
+    return col.toString(16).padStart(2, '0')
+  }
 
   return {
-    r: colorVal('r').toString(16),
-    g: colorVal('g').toString(16),
-    b: colorVal('b').toString(16),
+    r: colorVal('r'),
+    g: colorVal('g'),
+    b: colorVal('b'),
   }
 }
-
 
 export function getSandColor(progression: number) {
   const [color1, color2] = sandColors
@@ -51,4 +55,17 @@ export function getWaterColor(progression: number) {
   );
 
   return `#${rgbNew.r}${rgbNew.g}${rgbNew.b}`;
+}
+
+export function createParticleFromPosition(x: number, y: number, type: PARTICLE_TYPES) {
+  switch (type) {
+    case PARTICLE_TYPES.WATER:
+      return new Water(x, y)
+      break;
+    case PARTICLE_TYPES.SAND:
+      return new Sand(x, y)
+      break
+    default:
+      return new Particle(x, y, type)
+  }
 }
