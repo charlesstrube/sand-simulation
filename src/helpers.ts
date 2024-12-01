@@ -1,4 +1,5 @@
-const sandColors = ['#fff2f9', '#f2d2a9'];
+import { sandColors } from "./constants";
+
 
 // extract numeric r, g, b values from `rgb(nn, nn, nn)` string
 function getRgb(color: string) {

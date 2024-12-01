@@ -1,6 +1,7 @@
 import { WIDTH } from "./constants";
 import { doit } from "./helpers";
-import { Particle } from "./particle";
+import { Particle } from "./particles/particle";
+import { Solid } from "./particles/solid";
 
 
 interface Neighbors {
@@ -14,6 +15,13 @@ interface Neighbors {
   downRight?: Particle;
 }
 
+enum DIRECTION {
+  DOWN = 'DOWN',
+  DOWN_LEFT = 'DOWN_LEFT',
+  DOWN_RIGHT = 'DOWN_RIGHT',
+  ALIVE = 'ALIVE'
+}
+
 class Grid {
 
   colorIndex = 0;
@@ -24,31 +32,30 @@ class Grid {
     this.cells = Array.from({ length: height * width })
       .fill(undefined)
       .map((_, i) => {
-        const particle = new Particle(i % width, Math.floor(i / width), i);
+        const particle = new Solid(i % width, Math.floor(i / width));
 
         return particle
       })
   }
 
-  checkNextPosition(previousNeighbors: Neighbors) {
-
+  checkNextPosition(previousNeighbors: Neighbors): DIRECTION {
     if (previousNeighbors.down && previousNeighbors.down.alive === false) {
-      return 'down'
+      return DIRECTION.DOWN
     }
 
     if (previousNeighbors.downLeft && previousNeighbors.downLeft.alive === false && previousNeighbors.downRight && previousNeighbors.downRight.alive === false) {
-      return Math.random() > 0.5 ? 'downLeft' : 'downRight'
+      return Math.random() > 0.5 ? DIRECTION.DOWN_LEFT : DIRECTION.DOWN_RIGHT
     }
 
     if (previousNeighbors.downLeft && previousNeighbors.downLeft.alive === false) {
-      return 'downLeft'
+      return DIRECTION.DOWN_LEFT
     }
 
     if (previousNeighbors.downRight && previousNeighbors.downRight.alive === false) {
-      return 'downRight'
+      return DIRECTION.DOWN_RIGHT
     }
 
-    return 'alive'
+    return DIRECTION.ALIVE
   }
 
 
@@ -66,12 +73,12 @@ class Grid {
       if (previousCell.alive) {
         const currentCell = this.cells[i];
 
-        const previousNeighbors = previousGrid.getNeighbors(previousCell.position.x, previousCell.position.y);
+        const previousNeighbors = previousGrid.getDirectNeighbors(previousCell.position.x, previousCell.position.y);
         const position = this.checkNextPosition(previousNeighbors);
-        const currentNeighbors = this.getNeighbors(previousCell.position.x, previousCell.position.y);
+        const currentNeighbors = this.getDirectNeighbors(previousCell.position.x, previousCell.position.y);
 
         switch (position) {
-          case 'down':
+          case DIRECTION.DOWN:
             currentCell.alive = false;
             if (currentNeighbors.down) {
               currentNeighbors.down.color = previousCell.color;
@@ -79,7 +86,7 @@ class Grid {
             }
 
             break;
-          case 'downLeft':
+          case DIRECTION.DOWN_LEFT:
             currentCell.alive = false;
             if (currentNeighbors.downLeft) {
 
@@ -87,7 +94,7 @@ class Grid {
               currentNeighbors.downLeft.alive = true;
             }
             break;
-          case 'downRight':
+          case DIRECTION.DOWN_RIGHT:
             currentCell.alive = false;
             if (currentNeighbors.downRight) {
               currentNeighbors.downRight.color = previousCell.color;
@@ -104,7 +111,7 @@ class Grid {
   }
 
   addSand(x: number, y: number) {
-    const currentNeighbors = this.getNeighbors(x, y);
+    const currentNeighbors = this.getDirectNeighbors(x, y);
     const currentCell = this.getParticle(x, y);
     const { left, right } = currentNeighbors;
     const color = doit(this.colorIndex / 100)
@@ -128,7 +135,7 @@ class Grid {
     return this.cells[index]
   }
 
-  getNeighbors(x: number, y: number): Neighbors {
+  getDirectNeighbors(x: number, y: number): Neighbors {
     const up = this.getParticle(x, y - 1);
     const down = this.getParticle(x, y + 1);
     const isRightEdge = x === WIDTH - 1;
