@@ -20,6 +20,15 @@ if (app) {
 
   let x: undefined | number = undefined
   let y: undefined | number = undefined
+  let holding = false
+
+  canvas.addEventListener('mousedown', () => {
+    holding = true
+  })
+
+  canvas.addEventListener('mouseup', () => {
+    holding = false
+  })
 
   canvas.addEventListener('mousemove', (event) => {
     x = Math.floor(event.offsetX / CELL_SIZE)
@@ -38,7 +47,7 @@ if (app) {
 
       newGrid.addNextGeneration(grid)
 
-      if (x !== undefined && y !== undefined) {
+      if (holding && x !== undefined && y !== undefined) {
         newGrid.addSand(x, y)
       }
 
@@ -48,12 +57,13 @@ if (app) {
       context.fillRect(0, 0, CELL_SIZE * WIDTH, CELL_SIZE * HEIGHT)
       context.restore()
       newGrid.cells.forEach(cell => {
-        if (cell.alive) {
-          if (cell.color)
-            context.fillStyle = cell.color
-          context.fillRect(cell.position.x, cell.position.y, CELL_SIZE, CELL_SIZE)
-          context.restore()
+        if (!cell) {
+          return
         }
+        if (cell.color)
+          context.fillStyle = cell.color
+        context.fillRect(cell.position.x, cell.position.y, CELL_SIZE, CELL_SIZE)
+        context.restore()
       })
       grid = newGrid
       window.requestAnimationFrame(loop)
