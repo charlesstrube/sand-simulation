@@ -13,7 +13,6 @@ export class Liquid extends Particle {
 
 
   getNextStep(grid: Grid): { position: Position, hasMoved: boolean } {
-
     const farestDownPosition = this.farestPosition(grid, 'down', this.position);
     if (farestDownPosition !== this.position.y) {
       return {
@@ -33,9 +32,7 @@ export class Liquid extends Particle {
 
       if (result.continueToLook) {
         const { positionX, direction } = result;
-        if (!highestXPosition || highestXPosition.position.x < positionX) {
-          highestXPosition = { position: { x: positionX, y: currentPositionY }, direction };
-        }
+        highestXPosition = { position: { x: positionX, y: currentPositionY }, direction };
       }
     }
 
@@ -62,10 +59,11 @@ export class Liquid extends Particle {
     continueToLook: false;
   } {
     if (direction) {
-      const position = { y, x: this.farestPosition(grid, direction, { y, x: this.position.x }) };
+      const position = { y, x: this.closestPosition(grid, direction, { y, x: this.position.x }) };
       if (position.x !== this.position.x) {
         return { continueToLook: true, positionX: position.x, direction };
       }
+
       return { continueToLook: false };
     }
 
@@ -75,7 +73,7 @@ export class Liquid extends Particle {
 
 
     if (leftPosition.x !== this.position.x && rightPosition.x !== this.position.x) {
-      if (Math.random() > 0.5) {
+      if (Math.random() >= 0.5) {
         return { continueToLook: true, positionX: leftPosition.x, direction: 'left' };
       }
 

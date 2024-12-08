@@ -39,6 +39,21 @@ export class Particle {
     return '#ffffff';
   }
 
+  closestPosition(grid: Grid, direction: 'left' | 'right' | 'up' | 'down', position: Position) {
+    const axis = direction === 'left' || direction === 'right' ? 'x' : 'y';
+    const sign = direction === 'left' || direction === 'up' ? -1 : 1;
+    const velocity = axis === 'x' ? this.dispersionRate : this.weight;
+
+    for (let i = 1; i <= Math.abs(velocity); i++) {
+      const newAxisPosition = position[axis] + sign * i
+      if (this.isCellEmpty(grid, { ...position, [axis]: newAxisPosition })) {
+        return newAxisPosition;
+      }
+    }
+
+    return position[axis];
+  }
+
   farestPosition(grid: Grid, direction: 'left' | 'right' | 'up' | 'down', position: Position) {
     const axis = direction === 'left' || direction === 'right' ? 'x' : 'y';
     const sign = direction === 'left' || direction === 'up' ? -1 : 1;

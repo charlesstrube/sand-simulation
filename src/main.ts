@@ -1,4 +1,4 @@
-import { CELL_SIZE, HEIGHT, WIDTH, PARTICLE_TYPES } from './constants'
+import { CELL_SIZE, HEIGHT, WIDTH, PARTICLE_TYPES, FPS } from './constants'
 import Grid from './grid'
 import './style.css'
 
@@ -21,7 +21,7 @@ if (app) {
   app.appendChild(waterButton)
   app.appendChild(solidButton)
 
-  let currentType = PARTICLE_TYPES.SAND
+  let currentType = PARTICLE_TYPES.WATER
 
 
   sandButton.addEventListener('click', () => {
@@ -59,8 +59,8 @@ if (app) {
     y = Math.floor(event.offsetY / CELL_SIZE)
   })
 
-  const fps = 60;
-  const fpsInterval = 1000 / fps
+
+  const fpsInterval = 1000 / FPS
   let now = Date.now()
   let then = now
   let elapsed;
