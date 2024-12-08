@@ -9,19 +9,22 @@ export class Liquid extends Particle {
   familyType = PARTICLE_FAMILY_TYPES.LIQUID;
 
   getNextStep(grid: Grid): { position: Position, action: ACTION_TYPE_STEP } {
+
     const farestDownPosition = this.farestPosition(grid, 'down', this.position);
     if (farestDownPosition !== this.position.y) {
-
+      this.increaseVelocity()
       return {
         action: ACTION_TYPE_STEP.MOVE,
         position: { ...this.position, y: farestDownPosition },
       }
     }
 
+    /**
+     * Past this point, the particle is not free falling
+     */
+    this.resetVelocity()
     let highestXPosition: { direction: 'right' | 'left', position: Position } | undefined = undefined;
-
     let continueToLook = true;
-
     for (let i = 0; i <= Math.abs(this.weight) && continueToLook; i++) {
       const currentPositionY = this.position.y + i
       const result = this.lookForX(grid, currentPositionY, highestXPosition?.direction);
@@ -36,24 +39,17 @@ export class Liquid extends Particle {
     }
 
     if (highestXPosition) {
-
-
-
       return {
         action: ACTION_TYPE_STEP.MOVE,
         position: highestXPosition.position,
       }
     }
 
-
-
     return {
-      action: ACTION_TYPE_STEP.MOVE,
+      action: ACTION_TYPE_STEP.STILL,
       position: this.position,
     }
-
   }
-
 
   private lookForX(grid: Grid, y: number, direction?: "right" | "left"): {
     continueToLook: true;

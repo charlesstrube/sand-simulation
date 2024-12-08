@@ -7,6 +7,7 @@ export class Particle {
   color?: string;
   dispersionRate = 0;
   weight = 0;
+  velocity = 0;
   familyType = PARTICLE_FAMILY_TYPES.EMPTY
   type: MATERIAL_TYPES = MATERIAL_TYPES.EMPTY;
   nextPosition: Position | undefined = undefined;
@@ -14,6 +15,10 @@ export class Particle {
   constructor(x: number, y: number) {
     this.position = { x, y };
     this.color = this.getColor();
+  }
+
+  get calculatedVelocity() {
+    return Math.floor(this.velocity);
   }
 
   isNextPositionReachable(grid: Grid, position: Position) {
@@ -30,6 +35,14 @@ export class Particle {
 
   getColor() {
     return '#ffffff';
+  }
+
+  increaseVelocity() {
+    this.velocity += this.weight / 2;
+  }
+
+  resetVelocity() {
+    this.velocity = 0;
   }
 
   closestPosition(grid: Grid, direction: 'left' | 'right' | 'up' | 'down', position: Position) {
@@ -50,7 +63,7 @@ export class Particle {
   farestPosition(grid: Grid, direction: 'left' | 'right' | 'up' | 'down', position: Position) {
     const axis = direction === 'left' || direction === 'right' ? 'x' : 'y';
     const sign = direction === 'left' || direction === 'up' ? -1 : 1;
-    const velocity = axis === 'x' ? this.dispersionRate : this.weight;
+    const velocity = axis === 'x' ? this.dispersionRate : this.weight + this.calculatedVelocity;
     let previousAxisPosition = position[axis];
 
     for (let i = 1; i <= Math.abs(velocity); i++) {

@@ -8,7 +8,7 @@ let colorDirection = true;
 
 export class Water extends Liquid {
   dispersionRate = 7;
-  weight = 2;
+  weight = 1;
   type: MATERIAL_TYPES = MATERIAL_TYPES.WATER;
 
   getColor() {

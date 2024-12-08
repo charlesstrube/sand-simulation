@@ -8,33 +8,41 @@ export class MovableSolid extends Solid {
   weight = 1;
   solidType = PARTICLE_SOLID_FAMILY_TYPES.MOVABLE_SOLID;
 
+
+
   getNextStep(grid: Grid): { position: Position, action: ACTION_TYPE_STEP } {
 
     const downPosition = { ...this.position, y: this.position.y + this.weight }
-
     const downCell = grid.getParticle(downPosition.x, downPosition.y)
 
     if (downCell?.type === MATERIAL_TYPES.WATER) {
+      this.resetVelocity()
+
       return {
         action: ACTION_TYPE_STEP.SWAP,
         position: downPosition,
       }
     }
 
-    if (grid.isCellEmpty(downPosition)) {
+    const farestDownPosition = this.farestPosition(grid, 'down', this.position);
+    if (farestDownPosition !== this.position.y) {
+      this.increaseVelocity()
+
       return {
         action: ACTION_TYPE_STEP.MOVE,
-        position: downPosition,
+        position: { ...this.position, y: farestDownPosition },
       }
     }
+
+    /**
+     * Past this point, the particle is not free falling
+     */
+    this.resetVelocity()
 
     const downLeftPosition = { y: this.position.y + this.weight, x: this.position.x - this.dispersionRate }
     const downRightPosition = { y: this.position.y + this.weight, x: this.position.x + this.dispersionRate }
 
-    if (
-      grid.isCellEmpty(downLeftPosition)
-      && grid.isCellEmpty(downRightPosition)
-    ) {
+    if (grid.isCellEmpty(downLeftPosition) && grid.isCellEmpty(downRightPosition)) {
       return {
         action: ACTION_TYPE_STEP.MOVE,
         position: Math.random() > 0.5 ? downLeftPosition : downRightPosition,
@@ -57,7 +65,6 @@ export class MovableSolid extends Solid {
 
     return {
       action: ACTION_TYPE_STEP.STILL,
-
       position: this.position,
     }
   }
