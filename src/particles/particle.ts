@@ -1,4 +1,4 @@
-import { ACTION_TYPE_STEP, PARTICLE_FAMILY_TYPES, MATERIAL_TYPES, Position } from "../constants";
+import { ACTION_TYPE_STEP, PARTICLE_FAMILY_TYPES, Position } from "../constants";
 import Grid from "../grid";
 
 
@@ -9,7 +9,6 @@ export class Particle {
   weight = 0;
   velocity = 0;
   familyType = PARTICLE_FAMILY_TYPES.EMPTY
-  type: MATERIAL_TYPES = MATERIAL_TYPES.EMPTY;
   nextPosition: Position | undefined = undefined;
 
   constructor(x: number, y: number) {

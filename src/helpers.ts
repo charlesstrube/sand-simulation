@@ -1,4 +1,4 @@
-import { MATERIAL_TYPES, sandColors, waterColors } from "./constants";
+import { MATERIAL_TYPES, sandColors, waterColor } from "./constants";
 import { Particle } from "./particles/particle";
 import { Sand } from "./particles/sand";
 import { Water } from "./particles/water";
@@ -45,16 +45,8 @@ export function getSandColor(progression: number) {
   return `#${rgbNew.r}${rgbNew.g}${rgbNew.b}`;
 }
 
-export function getWaterColor(progression: number) {
-  const [color1, color2] = waterColors
-
-  const rgbNew = colorInterpolate(
-    color1,
-    color2,
-    progression
-  );
-
-  return `#${rgbNew.r}${rgbNew.g}${rgbNew.b}`;
+export function getWaterColor() {
+  return waterColor;
 }
 
 export function createParticleFromPosition(x: number, y: number, type: MATERIAL_TYPES) {
@@ -64,6 +56,6 @@ export function createParticleFromPosition(x: number, y: number, type: MATERIAL_
     case MATERIAL_TYPES.SAND:
       return new Sand(x, y)
     default:
-      return new Particle(x, y, type)
+      return new Particle(x, y)
   }
 }

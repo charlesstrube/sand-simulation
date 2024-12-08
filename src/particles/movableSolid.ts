@@ -1,5 +1,5 @@
 
-import { ACTION_TYPE_STEP, PARTICLE_SOLID_FAMILY_TYPES, MATERIAL_TYPES, Position } from '../constants';
+import { ACTION_TYPE_STEP, PARTICLE_SOLID_FAMILY_TYPES, Position, PARTICLE_FAMILY_TYPES } from '../constants';
 import Grid from '../grid';
 import { Solid } from './solid';
 
@@ -15,7 +15,7 @@ export class MovableSolid extends Solid {
     const downPosition = { ...this.position, y: this.position.y + this.weight }
     const downCell = grid.getParticle(downPosition.x, downPosition.y)
 
-    if (downCell?.type === MATERIAL_TYPES.WATER) {
+    if (downCell?.familyType === PARTICLE_FAMILY_TYPES.LIQUID) {
       this.resetVelocity()
 
       return {

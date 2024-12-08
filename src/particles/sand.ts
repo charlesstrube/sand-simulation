@@ -8,7 +8,7 @@ let colorDirection = true;
 
 
 export class Sand extends MovableSolid {
-  type: MATERIAL_TYPES = MATERIAL_TYPES.SAND;
+  materialType: MATERIAL_TYPES = MATERIAL_TYPES.SAND;
 
   getColor() {
     if (colorIndex >= 100) {

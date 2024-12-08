@@ -6,7 +6,7 @@ export const FPS = 120;
 export const SPAWN_AMOUNT_Y = 5;
 export const SPAWN_AMOUNT_X = 5;
 export const sandColors = ['#fff2f9', '#f2d2a9'];
-export const waterColors = ['#4682b4', '#00bdf7'];
+export const waterColor = '#00bdf7';
 export enum ACTION_TYPE_STEP {
   'MOVE' = 'MOVE',
   'STILL' = 'STILL',
