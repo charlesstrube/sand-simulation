@@ -1,4 +1,4 @@
-import { CELL_SIZE, HEIGHT, WIDTH, PARTICLE_TYPES, FPS } from './constants'
+import { CELL_SIZE, HEIGHT, WIDTH, MATERIAL_TYPES, FPS } from './constants'
 import Grid from './grid'
 import './style.css'
 
@@ -21,17 +21,17 @@ if (app) {
   app.appendChild(waterButton)
   app.appendChild(solidButton)
 
-  let currentType = PARTICLE_TYPES.WATER
+  let currentType = MATERIAL_TYPES.WATER
 
 
   sandButton.addEventListener('click', () => {
-    currentType = PARTICLE_TYPES.SAND
+    currentType = MATERIAL_TYPES.SAND
   })
   solidButton.addEventListener('click', () => {
-    currentType = PARTICLE_TYPES.SOLID
+    currentType = MATERIAL_TYPES.EMPTY
   })
   waterButton.addEventListener('click', () => {
-    currentType = PARTICLE_TYPES.WATER
+    currentType = MATERIAL_TYPES.WATER
   })
 
   const ratio = window.devicePixelRatio
@@ -74,7 +74,7 @@ if (app) {
   if (context) {
     context.scale(ratio, ratio)
 
-    const newGrid = new Grid(HEIGHT, WIDTH)
+    const grid = new Grid(HEIGHT, WIDTH)
 
     const loop = () => {
 
@@ -96,10 +96,10 @@ if (app) {
 
 
 
-        newGrid.addNextGeneration()
+        grid.addNextGeneration()
 
         if (holding && x !== undefined && y !== undefined) {
-          newGrid.addParticle(x, y, currentType)
+          grid.addParticle(x, y, currentType)
         }
 
 
@@ -107,7 +107,7 @@ if (app) {
         context.fillStyle = 'black'
         context.fillRect(0, 0, CELL_SIZE * WIDTH, CELL_SIZE * HEIGHT)
         context.restore()
-        newGrid.cells.forEach(cell => {
+        grid.cells.forEach(cell => {
           if (!cell) {
             return
           }

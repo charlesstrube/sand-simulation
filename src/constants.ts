@@ -12,14 +12,20 @@ export enum ACTION_TYPE_STEP {
   'STILL' = 'STILL',
   'SWAP' = 'SWAP',
 }
-export enum PARTICLE_TYPES {
-  MOVABLE_SOLID = 'MOVABLE_SOLID',
-  IMMOVABLE_SOLID = 'IMMOVABLE_SOLID',
+export enum MATERIAL_TYPES {
+  WATER = 'WATER',
+  SAND = 'SAND',
+  EMPTY = 'EMPTY',
+}
+export enum PARTICLE_FAMILY_TYPES {
   SOLID = 'SOLID',
   LIQUID = 'LIQUID',
   GAZ = 'GAZ',
-  WATER = 'WATER',
-  SAND = 'SAND',
+  EMPTY = 'EMPTY',
+}
+export enum PARTICLE_SOLID_FAMILY_TYPES {
+  MOVABLE_SOLID = 'MOVABLE_SOLID',
+  IMMOVABLE_SOLID = 'IMMOVABLE_SOLID',
 }
 export interface Position {
   x: number;

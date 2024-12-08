@@ -1,4 +1,4 @@
-import { HEIGHT, PARTICLE_TYPES, Position, SPAWN_AMOUNT_X, SPAWN_AMOUNT_Y, WIDTH } from "./constants";
+import { HEIGHT, MATERIAL_TYPES, Position, SPAWN_AMOUNT_X, SPAWN_AMOUNT_Y, WIDTH } from "./constants";
 import { createParticleFromPosition } from "./helpers";
 import { Particle } from "./particles/particle";
 
@@ -31,7 +31,7 @@ class Grid {
     }
   }
 
-  createParticleFromPosition(position: Position, type: PARTICLE_TYPES): Particle {
+  createParticleFromPosition(position: Position, type: MATERIAL_TYPES): Particle {
     const index = this.getIndexFromPosition(position.x, position.y)
     if (this.cells[index] === undefined) {
       this.cells[index] = createParticleFromPosition(position.x, position.y, type)
@@ -100,9 +100,6 @@ class Grid {
     this.shuffleArray(this.cells)
       .filter<Particle>((cell): cell is Particle => Boolean(cell))
       .forEach((cell) => {
-        if (cell.nextPosition) {
-          return this.commitChanges(cell)
-        }
         const { position, action } = cell.getNextStep(this)
         switch (action) {
           case 'MOVE': {
@@ -131,11 +128,12 @@ class Grid {
 
 
 
-  addParticle(x: number, y: number, type: PARTICLE_TYPES) {
+  addParticle(x: number, y: number, type: MATERIAL_TYPES) {
     for (let i = 0; i < SPAWN_AMOUNT_X; i++) {
       for (let j = 0; j < SPAWN_AMOUNT_Y; j++) {
-        if (!this.isOutOfBounds(x, y)) {
-          this.createParticleFromPosition({ x: x + i - 2, y: y + j - 2 }, type)
+        const position = { x: x + i - 2, y: y + j - 2 }
+        if (!this.isOutOfBounds(position.x, position.y)) {
+          this.createParticleFromPosition(position, type)
         }
       }
     }

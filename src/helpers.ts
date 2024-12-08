@@ -1,4 +1,4 @@
-import { PARTICLE_TYPES, sandColors, waterColors } from "./constants";
+import { MATERIAL_TYPES, sandColors, waterColors } from "./constants";
 import { Particle } from "./particles/particle";
 import { Sand } from "./particles/sand";
 import { Water } from "./particles/water";
@@ -57,11 +57,11 @@ export function getWaterColor(progression: number) {
   return `#${rgbNew.r}${rgbNew.g}${rgbNew.b}`;
 }
 
-export function createParticleFromPosition(x: number, y: number, type: PARTICLE_TYPES) {
+export function createParticleFromPosition(x: number, y: number, type: MATERIAL_TYPES) {
   switch (type) {
-    case PARTICLE_TYPES.WATER:
+    case MATERIAL_TYPES.WATER:
       return new Water(x, y)
-    case PARTICLE_TYPES.SAND:
+    case MATERIAL_TYPES.SAND:
       return new Sand(x, y)
     default:
       return new Particle(x, y, type)

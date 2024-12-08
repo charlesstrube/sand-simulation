@@ -1,4 +1,4 @@
-import { ACTION_TYPE_STEP, PARTICLE_TYPES, Position } from "../constants";
+import { ACTION_TYPE_STEP, PARTICLE_FAMILY_TYPES, MATERIAL_TYPES, Position } from "../constants";
 import Grid from "../grid";
 
 
@@ -7,13 +7,12 @@ export class Particle {
   color?: string;
   dispersionRate = 0;
   weight = 0;
-
-  type: PARTICLE_TYPES = PARTICLE_TYPES.MOVABLE_SOLID;
+  familyType = PARTICLE_FAMILY_TYPES.EMPTY
+  type: MATERIAL_TYPES = MATERIAL_TYPES.EMPTY;
   nextPosition: Position | undefined = undefined;
 
-  constructor(x: number, y: number, type: PARTICLE_TYPES) {
+  constructor(x: number, y: number) {
     this.position = { x, y };
-    this.type = type;
     this.color = this.getColor();
   }
 

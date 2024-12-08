@@ -1,20 +1,17 @@
 
-import { ACTION_TYPE_STEP, PARTICLE_TYPES, Position } from '../constants';
+import { ACTION_TYPE_STEP, PARTICLE_FAMILY_TYPES, Position } from '../constants';
 import Grid from '../grid';
 import { Particle } from './particle';
 
 export class Liquid extends Particle {
   dispersionRate = 1;
   weight = 1;
-  constructor(x: number, y: number, type = PARTICLE_TYPES.LIQUID) {
-    super(x, y, type);
-  }
-
-
+  familyType = PARTICLE_FAMILY_TYPES.LIQUID;
 
   getNextStep(grid: Grid): { position: Position, action: ACTION_TYPE_STEP } {
     const farestDownPosition = this.farestPosition(grid, 'down', this.position);
     if (farestDownPosition !== this.position.y) {
+
       return {
         action: ACTION_TYPE_STEP.MOVE,
         position: { ...this.position, y: farestDownPosition },
@@ -30,6 +27,8 @@ export class Liquid extends Particle {
       const result = this.lookForX(grid, currentPositionY, highestXPosition?.direction);
       continueToLook = result.continueToLook
 
+
+
       if (result.continueToLook) {
         const { positionX, direction } = result;
         highestXPosition = { position: { x: positionX, y: currentPositionY }, direction };
@@ -37,11 +36,16 @@ export class Liquid extends Particle {
     }
 
     if (highestXPosition) {
+
+
+
       return {
         action: ACTION_TYPE_STEP.MOVE,
         position: highestXPosition.position,
       }
     }
+
+
 
     return {
       action: ACTION_TYPE_STEP.MOVE,

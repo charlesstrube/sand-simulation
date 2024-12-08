@@ -1,5 +1,5 @@
 
-import { PARTICLE_TYPES } from '../constants';
+import { MATERIAL_TYPES } from '../constants';
 import { getWaterColor } from '../helpers';
 import { Liquid } from './liquid';
 
@@ -9,9 +9,7 @@ let colorDirection = true;
 export class Water extends Liquid {
   dispersionRate = 7;
   weight = 2;
-  constructor(x: number, y: number) {
-    super(x, y, PARTICLE_TYPES.WATER);
-  }
+  type: MATERIAL_TYPES = MATERIAL_TYPES.WATER;
 
   getColor() {
     if (colorIndex >= 100) {

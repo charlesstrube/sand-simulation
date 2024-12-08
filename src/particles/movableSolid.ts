@@ -1,14 +1,12 @@
 
-import { ACTION_TYPE_STEP, PARTICLE_TYPES, Position } from '../constants';
+import { ACTION_TYPE_STEP, PARTICLE_SOLID_FAMILY_TYPES, MATERIAL_TYPES, Position } from '../constants';
 import Grid from '../grid';
 import { Solid } from './solid';
 
 export class MovableSolid extends Solid {
   dispersionRate = 1;
   weight = 1;
-  constructor(x: number, y: number, type = PARTICLE_TYPES.MOVABLE_SOLID) {
-    super(x, y, type);
-  }
+  solidType = PARTICLE_SOLID_FAMILY_TYPES.MOVABLE_SOLID;
 
   getNextStep(grid: Grid): { position: Position, action: ACTION_TYPE_STEP } {
 
@@ -16,7 +14,7 @@ export class MovableSolid extends Solid {
 
     const downCell = grid.getParticle(downPosition.x, downPosition.y)
 
-    if (downCell?.type === PARTICLE_TYPES.WATER) {
+    if (downCell?.type === MATERIAL_TYPES.WATER) {
       return {
         action: ACTION_TYPE_STEP.SWAP,
         position: downPosition,

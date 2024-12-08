@@ -1,5 +1,5 @@
 
-import { PARTICLE_TYPES } from '../constants';
+import { MATERIAL_TYPES } from '../constants';
 import { getSandColor } from '../helpers';
 import { MovableSolid } from './movableSolid';
 
@@ -8,9 +8,7 @@ let colorDirection = true;
 
 
 export class Sand extends MovableSolid {
-  constructor(x: number, y: number) {
-    super(x, y, PARTICLE_TYPES.SAND);
-  }
+  type: MATERIAL_TYPES = MATERIAL_TYPES.SAND;
 
   getColor() {
     if (colorIndex >= 100) {
