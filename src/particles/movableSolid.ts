@@ -1,5 +1,5 @@
 
-import { PARTICLE_TYPES, Position } from '../constants';
+import { ACTION_TYPE_STEP, PARTICLE_TYPES, Position } from '../constants';
 import Grid from '../grid';
 import { Solid } from './solid';
 
@@ -10,13 +10,23 @@ export class MovableSolid extends Solid {
     super(x, y, type);
   }
 
-  getNextStep(previous: Grid): { position: Position, hasMoved: boolean } {
+  getNextStep(grid: Grid): { position: Position, action: ACTION_TYPE_STEP } {
 
     const downPosition = { ...this.position, y: this.position.y + this.weight }
-    if (this.isCellEmpty(previous, downPosition)) {
+
+    const downCell = grid.getParticle(downPosition.x, downPosition.y)
+
+    if (downCell?.type === PARTICLE_TYPES.WATER) {
       return {
+        action: ACTION_TYPE_STEP.SWAP,
         position: downPosition,
-        hasMoved: true
+      }
+    }
+
+    if (grid.isCellEmpty(downPosition)) {
+      return {
+        action: ACTION_TYPE_STEP.MOVE,
+        position: downPosition,
       }
     }
 
@@ -24,32 +34,33 @@ export class MovableSolid extends Solid {
     const downRightPosition = { y: this.position.y + this.weight, x: this.position.x + this.dispersionRate }
 
     if (
-      this.isCellEmpty(previous, downLeftPosition)
-      && this.isCellEmpty(previous, downRightPosition)
+      grid.isCellEmpty(downLeftPosition)
+      && grid.isCellEmpty(downRightPosition)
     ) {
       return {
+        action: ACTION_TYPE_STEP.MOVE,
         position: Math.random() > 0.5 ? downLeftPosition : downRightPosition,
-        hasMoved: true
       }
     }
 
-    if (this.isCellEmpty(previous, downRightPosition)) {
+    if (grid.isCellEmpty(downRightPosition)) {
       return {
+        action: ACTION_TYPE_STEP.MOVE,
         position: downRightPosition,
-        hasMoved: true
       }
     }
 
-    if (this.isCellEmpty(previous, downLeftPosition)) {
+    if (grid.isCellEmpty(downLeftPosition)) {
       return {
+        action: ACTION_TYPE_STEP.MOVE,
         position: downLeftPosition,
-        hasMoved: true
       }
     }
 
     return {
+      action: ACTION_TYPE_STEP.STILL,
+
       position: this.position,
-      hasMoved: false
     }
   }
 }

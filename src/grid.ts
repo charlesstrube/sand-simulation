@@ -1,4 +1,4 @@
-import { HEIGHT, PARTICLE_TYPES, Position, WIDTH } from "./constants";
+import { HEIGHT, PARTICLE_TYPES, Position, SPAWN_AMOUNT_X, SPAWN_AMOUNT_Y, WIDTH } from "./constants";
 import { createParticleFromPosition } from "./helpers";
 import { Particle } from "./particles/particle";
 
@@ -12,6 +12,12 @@ class Grid {
       .fill(undefined)
 
     this.cells = cells
+  }
+
+  isCellEmpty(position: Position) {
+    return Boolean(position)
+      && !this.isOutOfBounds(position.x, position.y)
+      && !this.getParticle(position.x, position.y)
   }
 
   getIndexFromPosition(x: number, y: number): number {
@@ -44,21 +50,19 @@ class Grid {
     if (particle && particle.nextPosition) {
       particle.position = particle.nextPosition
       const newIndex = this.getIndexFromPosition(particle.nextPosition.x, particle.nextPosition.y)
-      this.cells[index] = undefined
+      this.cells[index] = this.cells[newIndex]
       this.cells[newIndex] = particle
       particle.nextPosition = undefined
     }
   }
 
-  commitChanges(cell: Particle, hasMoved: boolean) {
+  commitChanges(cell: Particle,) {
     const { nextPosition } = cell
 
     if (nextPosition) {
       const isReachable = this.getNeighborPosition(nextPosition.x, nextPosition.y)
-      if (isReachable && hasMoved) {
-        this.updateParticle(
-          cell
-        )
+      if (isReachable) {
+        this.updateParticle(cell)
       }
     }
   }
@@ -73,14 +77,50 @@ class Grid {
     return newArray
   }
 
+  swapCell(x1: number, y1: number, x2: number, y2: number) {
+    if (this.isOutOfBounds(x1, y1) || this.isOutOfBounds(x2, y2)) {
+      return;
+    }
+
+    const index1 = this.getIndexFromPosition(x1, y1);
+    const index2 = this.getIndexFromPosition(x2, y2);
+
+    [this.cells[index1], this.cells[index2]] = [this.cells[index2], this.cells[index1]];
+
+    if (this.cells[index1]) {
+      this.cells[index1].position = { x: x1, y: y1 };
+    }
+
+    if (this.cells[index2]) {
+      this.cells[index2].position = { x: x2, y: y2 };
+    }
+  }
 
   addNextGeneration() {
     this.shuffleArray(this.cells)
       .filter<Particle>((cell): cell is Particle => Boolean(cell))
       .forEach((cell) => {
-        const { position, hasMoved } = cell.getNextStep(this)
-        cell.nextPosition = position
-        this.commitChanges(cell, hasMoved)
+        if (cell.nextPosition) {
+          return this.commitChanges(cell)
+        }
+        const { position, action } = cell.getNextStep(this)
+        switch (action) {
+          case 'MOVE': {
+            cell.nextPosition = position
+            this.commitChanges(cell)
+            break;
+          }
+          case 'SWAP': {
+            this.swapCell(position.x, position.y, cell.position.x, cell.position.y)
+            break;
+          }
+          case 'STILL':
+          default: {
+            break;
+          }
+        }
+
+
       })
   }
 
@@ -92,19 +132,13 @@ class Grid {
 
 
   addParticle(x: number, y: number, type: PARTICLE_TYPES) {
-    if (this.isOutOfBounds(x, y)) {
-      return
+    for (let i = 0; i < SPAWN_AMOUNT_X; i++) {
+      for (let j = 0; j < SPAWN_AMOUNT_Y; j++) {
+        if (!this.isOutOfBounds(x, y)) {
+          this.createParticleFromPosition({ x: x + i - 2, y: y + j - 2 }, type)
+        }
+      }
     }
-    this.createParticleFromPosition({ x, y }, type);
-    // const right = this.getNeighborPosition(x + 1, y);
-    // const left = this.getNeighborPosition(x - 1, y);
-
-    // if (left) {
-    //   this.createParticleFromPosition(left, type);
-    // }
-    // if (right) {
-    //   this.createParticleFromPosition(right, type);
-    // }
   }
 
   getParticle(x: number, y: number) {

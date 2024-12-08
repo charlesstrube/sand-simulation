@@ -65,8 +65,6 @@ if (app) {
   let then = now
   let elapsed;
 
-  const hasSpwaned = false
-
 
   // initialize the timer variables and start the animation
 
@@ -101,15 +99,7 @@ if (app) {
         newGrid.addNextGeneration()
 
         if (holding && x !== undefined && y !== undefined) {
-          // if (currentType === PARTICLE_TYPES.WATER) {
-          //   if (!hasSpwaned) {
-          //     newGrid.addParticle(x, y, currentType)
-          //     hasSpwaned = true
-          //   }
-          // } else {
           newGrid.addParticle(x, y, currentType)
-
-          // }
         }
 
 

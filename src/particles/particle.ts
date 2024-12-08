@@ -1,4 +1,4 @@
-import { PARTICLE_TYPES, Position } from "../constants";
+import { ACTION_TYPE_STEP, PARTICLE_TYPES, Position } from "../constants";
 import Grid from "../grid";
 
 
@@ -17,18 +17,12 @@ export class Particle {
     this.color = this.getColor();
   }
 
-  isCellEmpty(grid: Grid, position: Position) {
-    return Boolean(position)
-      && !grid.isOutOfBounds(position.x, position.y)
-      && !grid.getParticle(position.x, position.y)
-  }
-
   isNextPositionReachable(grid: Grid, position: Position) {
     const diffX = Math.abs(this.position.x - position.x);
 
     for (let offsetX = 0; offsetX <= diffX; offsetX++) {
       const checkX = this.position.x + (position.x > this.position.x ? offsetX : -offsetX);
-      if (this.isCellEmpty(grid, { x: checkX, y: position.y })) {
+      if (grid.isCellEmpty({ x: checkX, y: position.y })) {
         return true;
       }
     }
@@ -46,7 +40,7 @@ export class Particle {
 
     for (let i = 1; i <= Math.abs(velocity); i++) {
       const newAxisPosition = position[axis] + sign * i
-      if (this.isCellEmpty(grid, { ...position, [axis]: newAxisPosition })) {
+      if (grid.isCellEmpty({ ...position, [axis]: newAxisPosition })) {
         return newAxisPosition;
       }
     }
@@ -62,7 +56,7 @@ export class Particle {
 
     for (let i = 1; i <= Math.abs(velocity); i++) {
       const newAxisPosition = position[axis] + sign * i
-      if (this.isCellEmpty(grid, { ...position, [axis]: newAxisPosition })) {
+      if (grid.isCellEmpty({ ...position, [axis]: newAxisPosition })) {
         previousAxisPosition = newAxisPosition;
       } else {
         return previousAxisPosition;
@@ -73,7 +67,7 @@ export class Particle {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  getNextStep(grid: Grid): { position: Position, hasMoved: boolean } {
-    return { position: this.position, hasMoved: false };
+  getNextStep(grid: Grid): { position: Position, action: ACTION_TYPE_STEP } {
+    return { position: this.position, action: ACTION_TYPE_STEP.STILL };
   }
 }

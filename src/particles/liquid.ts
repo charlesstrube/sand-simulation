@@ -1,5 +1,5 @@
 
-import { PARTICLE_TYPES, Position } from '../constants';
+import { ACTION_TYPE_STEP, PARTICLE_TYPES, Position } from '../constants';
 import Grid from '../grid';
 import { Particle } from './particle';
 
@@ -12,12 +12,12 @@ export class Liquid extends Particle {
 
 
 
-  getNextStep(grid: Grid): { position: Position, hasMoved: boolean } {
+  getNextStep(grid: Grid): { position: Position, action: ACTION_TYPE_STEP } {
     const farestDownPosition = this.farestPosition(grid, 'down', this.position);
     if (farestDownPosition !== this.position.y) {
       return {
+        action: ACTION_TYPE_STEP.MOVE,
         position: { ...this.position, y: farestDownPosition },
-        hasMoved: true
       }
     }
 
@@ -38,14 +38,14 @@ export class Liquid extends Particle {
 
     if (highestXPosition) {
       return {
+        action: ACTION_TYPE_STEP.MOVE,
         position: highestXPosition.position,
-        hasMoved: true
       }
     }
 
     return {
+      action: ACTION_TYPE_STEP.MOVE,
       position: this.position,
-      hasMoved: false
     }
 
   }
