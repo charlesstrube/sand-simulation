@@ -47,28 +47,31 @@ class Grid {
     this.cells[index] = undefined
   }
 
+  updateParticle(particle: Particle) {
+    const index = this.getIndexFromPosition(particle.position.x, particle.position.y)
+    if (particle && particle.nextPosition) {
+      particle.position = particle.nextPosition
+      const newIndex = this.getIndexFromPosition(particle.nextPosition.x, particle.nextPosition.y)
+      this.cells[index] = undefined
+      this.cells[newIndex] = particle
+      particle.nextPosition = undefined
+    }
+  }
+
   commitChanges(cell: Particle, hasMoved: boolean) {
     const { nextPosition } = cell
 
     if (nextPosition) {
       const isReachable = this.getNeighborPosition(nextPosition.x, nextPosition.y)
-      if (isReachable) {
-        const down = this.createParticleFromPosition(
-          nextPosition,
-          cell.type
+      if (isReachable && hasMoved) {
+        this.updateParticle(
+          cell
         )
-        down.color = cell.color;
-        if (hasMoved) {
-          this.removeParticleFromPosition(cell.position)
-        }
       }
     }
   }
 
-  removeParticleFromPosition(position: Position) {
-    const index = this.getIndexFromPosition(position.x, position.y)
-    this.cells[index] = undefined
-  }
+
 
   shuffleArray(array: unknown[]) {
     const newArray = [...array]
