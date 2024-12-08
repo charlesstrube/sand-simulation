@@ -95,16 +95,15 @@ class Grid {
     if (this.isOutOfBounds(x, y)) {
       return
     }
+    this.createParticleFromPosition({ x, y }, type);
     // const right = this.getNeighborPosition(x + 1, y);
     // const left = this.getNeighborPosition(x - 1, y);
-    this.createParticleFromPosition({ x, y }, type);
-
 
     // if (left) {
-    //   const particle = this.createParticleFromPosition(left, type);
+    //   this.createParticleFromPosition(left, type);
     // }
     // if (right) {
-    //   const particle = this.createParticleFromPosition(right, type);
+    //   this.createParticleFromPosition(right, type);
     // }
   }
 

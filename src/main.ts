@@ -64,6 +64,7 @@ if (app) {
   let now = Date.now()
   let then = now
   let elapsed;
+  let hasSpwaned = false
 
 
   // initialize the timer variables and start the animation
@@ -100,6 +101,14 @@ if (app) {
 
         if (holding && x !== undefined && y !== undefined) {
           newGrid.addParticle(x, y, currentType)
+          if (currentType === PARTICLE_TYPES.WATER) {
+            if (!hasSpwaned) {
+              hasSpwaned = true
+            }
+          } else {
+            newGrid.addParticle(x, y, currentType)
+
+          }
         }
 
 

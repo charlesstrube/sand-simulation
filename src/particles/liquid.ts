@@ -9,17 +9,17 @@ export class Liquid extends Particle {
     super(x, y, type);
   }
 
-  getFarest(grid: Grid, direction: 'left' | 'right') {
-    const axis = direction === 'left' ? 'x' : 'x';
-    const sign = direction === 'left' ? -1 : 1;
+  farestPosition(grid: Grid, direction: 'left' | 'right' | 'up' | 'down', position: Position) {
+    const axis = direction === 'left' || direction === 'right' ? 'x' : 'y';
+    const sign = direction === 'left' || direction === 'up' ? -1 : 1;
     const velocityAxis = this.velocity[axis];
-    let previousAxisPosition = this.position[axis];
+    let previousAxisPosition = position[axis];
 
-    const get = (direction: 'x' | 'y', i: number) => this.position[direction] + sign * i;
+    const get = (direction: 'x' | 'y', i: number) => position[direction] + sign * i;
 
     for (let i = 1; i <= Math.abs(velocityAxis); i++) {
       const newAxisPosition = get(axis, i)
-      if (this.isCellEmpty(grid, { ...this.position, [axis]: newAxisPosition })) {
+      if (this.isCellEmpty(grid, { ...position, [axis]: newAxisPosition })) {
         previousAxisPosition = newAxisPosition;
       } else {
         return previousAxisPosition;
@@ -31,6 +31,8 @@ export class Liquid extends Particle {
 
   getNextStep(grid: Grid): { position: Position, hasMoved: boolean } {
     const downPosition = { ...this.position, y: this.position.y + this.velocity.y }
+
+    // const farestDownPosition = this.farestPosition(grid, 'down', this.position);
     if (this.isCellEmpty(grid, downPosition)) {
       return {
         position: downPosition,
@@ -38,33 +40,29 @@ export class Liquid extends Particle {
       }
     }
 
-    const leftPosition = { y: this.position.y, x: this.getFarest(grid, 'left') }
-    const rightPosition = { y: this.position.y, x: this.getFarest(grid, 'right') }
+    let highestXPosition: { direction: 'right' | 'left', position: Position } | undefined = undefined;
 
-    if (
-      leftPosition.x !== this.position.x && rightPosition.x !== this.position.x
-    ) {
-      return {
-        position: Math.random() > 0.5 ? leftPosition : rightPosition,
-        hasMoved: true
+    let continueToLook = true;
+
+    for (let i = 0; i <= Math.abs(this.velocity.y) && continueToLook; i++) {
+      const currentPositionY = this.position.y + i
+      const result = this.lookForX(grid, currentPositionY, highestXPosition?.direction);
+      continueToLook = result.continueToLook
+
+      if (result.continueToLook) {
+        const { positionX, direction } = result;
+        if (!highestXPosition || highestXPosition.position.x < positionX) {
+          highestXPosition = { position: { x: positionX, y: currentPositionY }, direction };
+        }
       }
     }
 
-    if (leftPosition.x !== this.position.x) {
+    if (highestXPosition) {
       return {
-        position: leftPosition,
+        position: highestXPosition.position,
         hasMoved: true
       }
     }
-
-    if (rightPosition.x !== this.position.x) {
-      return {
-        position: rightPosition,
-        hasMoved: true
-      }
-    }
-
-
 
     return {
       position: this.position,
@@ -73,4 +71,43 @@ export class Liquid extends Particle {
 
   }
 
+
+  private lookForX(grid: Grid, y: number, direction?: "right" | "left"): {
+    continueToLook: true;
+    direction: "right" | "left";
+    positionX: number;
+  } | {
+    continueToLook: false;
+  } {
+    if (direction) {
+      const position = { y, x: this.farestPosition(grid, direction, { y, x: this.position.x }) };
+      if (position.x !== this.position.x) {
+        return { continueToLook: true, positionX: position.x, direction };
+      }
+      return { continueToLook: false };
+    }
+
+
+    const leftPosition = { y, x: this.farestPosition(grid, 'left', { y, x: this.position.x }) };
+    const rightPosition = { y, x: this.farestPosition(grid, 'right', { y, x: this.position.x }) };
+
+
+    if (leftPosition.x !== this.position.x && rightPosition.x !== this.position.x) {
+      if (Math.random() > 0.5) {
+        return { continueToLook: true, positionX: leftPosition.x, direction: 'left' };
+      }
+
+      return { continueToLook: true, positionX: rightPosition.x, direction: 'right' };
+    }
+
+    if (leftPosition.x !== this.position.x) {
+      return { continueToLook: true, positionX: leftPosition.x, direction: 'left' };
+    }
+
+    if (rightPosition.x !== this.position.x) {
+      return { continueToLook: true, positionX: rightPosition.x, direction: 'right' };
+    }
+
+    return { continueToLook: false };
+  }
 }

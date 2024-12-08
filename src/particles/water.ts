@@ -7,7 +7,7 @@ let colorIndex = 0;
 let colorDirection = true;
 
 export class Water extends Liquid {
-  velocity = { x: 3, y: 1 };
+  velocity = { x: 5, y: 2 };
 
   constructor(x: number, y: number) {
     super(x, y, PARTICLE_TYPES.WATER);
