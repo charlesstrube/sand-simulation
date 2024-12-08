@@ -15,10 +15,8 @@ export class Liquid extends Particle {
     const velocityAxis = this.velocity[axis];
     let previousAxisPosition = position[axis];
 
-    const get = (direction: 'x' | 'y', i: number) => position[direction] + sign * i;
-
     for (let i = 1; i <= Math.abs(velocityAxis); i++) {
-      const newAxisPosition = get(axis, i)
+      const newAxisPosition = position[axis] + sign * i
       if (this.isCellEmpty(grid, { ...position, [axis]: newAxisPosition })) {
         previousAxisPosition = newAxisPosition;
       } else {
@@ -30,12 +28,11 @@ export class Liquid extends Particle {
   }
 
   getNextStep(grid: Grid): { position: Position, hasMoved: boolean } {
-    const downPosition = { ...this.position, y: this.position.y + this.velocity.y }
 
-    // const farestDownPosition = this.farestPosition(grid, 'down', this.position);
-    if (this.isCellEmpty(grid, downPosition)) {
+    const farestDownPosition = this.farestPosition(grid, 'down', this.position);
+    if (farestDownPosition !== this.position.y) {
       return {
-        position: downPosition,
+        position: { ...this.position, y: farestDownPosition },
         hasMoved: true
       }
     }
