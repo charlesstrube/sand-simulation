@@ -9,31 +9,46 @@ export class MovableSolid extends Solid {
     super(x, y, type);
   }
 
-  getNextStep(previous: Grid, next: Grid): Position {
+  getNextStep(previous: Grid): { position: Position, hasMoved: boolean } {
 
     const downPosition = { ...this.position, y: this.position.y + this.velocity.y }
-    if (this.isCellEmpty(previous, next, downPosition)) {
-      return downPosition
+    if (this.isCellEmpty(previous, downPosition)) {
+      return {
+        position: downPosition,
+        hasMoved: true
+      }
     }
 
     const downLeftPosition = { y: this.position.y + this.velocity.y, x: this.position.x - this.velocity.x }
     const downRightPosition = { y: this.position.y + this.velocity.y, x: this.position.x + this.velocity.x }
 
     if (
-      this.isCellEmpty(previous, next, downLeftPosition)
-      && this.isCellEmpty(previous, next, downRightPosition)
+      this.isCellEmpty(previous, downLeftPosition)
+      && this.isCellEmpty(previous, downRightPosition)
     ) {
-      return Math.random() > 0.5 ? downLeftPosition : downRightPosition
+      return {
+        position: Math.random() > 0.5 ? downLeftPosition : downRightPosition,
+        hasMoved: true
+      }
     }
 
-    if (this.isCellEmpty(previous, next, downRightPosition)) {
-      return downRightPosition
+    if (this.isCellEmpty(previous, downRightPosition)) {
+      return {
+        position: downRightPosition,
+        hasMoved: true
+      }
     }
 
-    if (this.isCellEmpty(previous, next, downLeftPosition)) {
-      return downLeftPosition
+    if (this.isCellEmpty(previous, downLeftPosition)) {
+      return {
+        position: downLeftPosition,
+        hasMoved: true
+      }
     }
 
-    return this.position
+    return {
+      position: this.position,
+      hasMoved: false
+    }
   }
 }

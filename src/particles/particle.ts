@@ -14,19 +14,18 @@ export class Particle {
     this.type = type;
   }
 
-  isCellEmpty(previous: Grid, next: Grid, position: Position) {
-    return Boolean(position
-      && !next.isOutOfBounds(position.x, position.y)
-      && !previous.getParticle(position.x, position.y)
-      && !next.getParticle(position.x, position.y));
+  isCellEmpty(grid: Grid, position: Position) {
+    return Boolean(position)
+      && !grid.isOutOfBounds(position.x, position.y)
+      && !grid.getParticle(position.x, position.y)
   }
 
-  isNextPositionReachable(previous: Grid, next: Grid, position: Position) {
+  isNextPositionReachable(grid: Grid, position: Position) {
     const diffX = Math.abs(this.position.x - position.x);
 
     for (let offsetX = 0; offsetX <= diffX; offsetX++) {
       const checkX = this.position.x + (position.x > this.position.x ? offsetX : -offsetX);
-      if (this.isCellEmpty(previous, next, { x: checkX, y: position.y })) {
+      if (this.isCellEmpty(grid, { x: checkX, y: position.y })) {
         return true;
       }
     }
@@ -34,7 +33,7 @@ export class Particle {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  getNextStep(grid: Grid, next: Grid): Position {
-    return this.position
+  getNextStep(grid: Grid): { position: Position, hasMoved: boolean } {
+    return { position: this.position, hasMoved: false };
   }
 }

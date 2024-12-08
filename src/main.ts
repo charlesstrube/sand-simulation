@@ -74,7 +74,7 @@ if (app) {
   if (context) {
     context.scale(ratio, ratio)
 
-    let grid = new Grid(HEIGHT, WIDTH)
+    const newGrid = new Grid(HEIGHT, WIDTH)
 
     const loop = () => {
 
@@ -94,9 +94,9 @@ if (app) {
 
         // Put your drawing code here
 
-        const newGrid = new Grid(HEIGHT, WIDTH)
 
-        newGrid.addNextGeneration(grid)
+
+        newGrid.addNextGeneration()
 
         if (holding && x !== undefined && y !== undefined) {
           newGrid.addParticle(x, y, currentType)
@@ -116,8 +116,6 @@ if (app) {
           context.fillRect(cell.position.x, cell.position.y, 1, 1)
           context.restore()
         })
-        grid = newGrid
-
       }
 
     }

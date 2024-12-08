@@ -33,8 +33,8 @@ class Grid {
     if (this.cells[index] === undefined) {
       this.cells[index] = createParticleFromPosition(position.x, position.y, type)
     }
-    return this.cells[index]
 
+    return this.cells[index]
   }
 
   createParticleFromIndex(index: number, type: PARTICLE_TYPES): Particle {
@@ -47,19 +47,27 @@ class Grid {
     this.cells[index] = undefined
   }
 
-  commitChanges(previousCell: Particle) {
-    const { nextPosition } = previousCell
+  commitChanges(cell: Particle, hasMoved: boolean) {
+    const { nextPosition } = cell
 
     if (nextPosition) {
       const isReachable = this.getNeighborPosition(nextPosition.x, nextPosition.y)
       if (isReachable) {
         const down = this.createParticleFromPosition(
           nextPosition,
-          previousCell.type
+          cell.type
         )
-        down.color = previousCell.color;
+        down.color = cell.color;
+        if (hasMoved) {
+          this.removeParticleFromPosition(cell.position)
+        }
       }
     }
+  }
+
+  removeParticleFromPosition(position: Position) {
+    const index = this.getIndexFromPosition(position.x, position.y)
+    this.cells[index] = undefined
   }
 
   shuffleArray(array: unknown[]) {
@@ -73,25 +81,23 @@ class Grid {
   }
 
 
-  addNextGeneration(previousGrid: Grid) {
-    this.colorDirection = previousGrid.colorDirection
-    if (previousGrid.colorIndex >= 100) {
+  addNextGeneration() {
+    if (this.colorIndex >= 100) {
       this.colorDirection = false
     }
-    if (previousGrid.colorIndex < 0) {
+    if (this.colorIndex < 0) {
       this.colorDirection = true
     }
 
-    this.colorIndex = this.colorDirection ? previousGrid.colorIndex + .1 : previousGrid.colorIndex - .1
+    this.colorIndex = this.colorDirection ? this.colorIndex + .1 : this.colorIndex - .1
 
-    const cells = this.shuffleArray(previousGrid.cells)
+    this.shuffleArray(this.cells)
       .filter<Particle>((cell): cell is Particle => Boolean(cell))
-
-
-    cells.forEach((previousCell) => {
-      previousCell.nextPosition = previousCell.getNextStep(previousGrid, this)
-      this.commitChanges(previousCell)
-    })
+      .forEach((cell) => {
+        const { position, hasMoved } = cell.getNextStep(this)
+        cell.nextPosition = position
+        this.commitChanges(cell, hasMoved)
+      })
   }
 
 

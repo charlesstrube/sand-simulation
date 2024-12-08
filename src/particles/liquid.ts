@@ -9,10 +9,13 @@ export class Liquid extends Particle {
     super(x, y, type);
   }
 
-  getNextStep(previous: Grid, next: Grid): Position {
+  getNextStep(previous: Grid): { position: Position, hasMoved: boolean } {
     const downPosition = { ...this.position, y: this.position.y + this.velocity.y }
-    if (this.isCellEmpty(previous, next, downPosition)) {
-      return downPosition
+    if (this.isCellEmpty(previous, downPosition)) {
+      return {
+        position: downPosition,
+        hasMoved: true
+      }
     }
 
     for (let velocityY = this.velocity.y; velocityY >= 0; velocityY--) {
@@ -20,25 +23,37 @@ export class Liquid extends Particle {
         const leftPosition = { y: this.position.y + velocityY, x: this.position.x - velocityX }
         const rightPosition = { y: this.position.y + velocityY, x: this.position.x + velocityX }
         if (
-          this.isCellEmpty(previous, next, leftPosition)
-          && this.isCellEmpty(previous, next, rightPosition)
+          this.isCellEmpty(previous, leftPosition)
+          && this.isCellEmpty(previous, rightPosition)
         ) {
-          return Math.random() > 0.5 ? leftPosition : rightPosition
+          return {
+            position: Math.random() > 0.5 ? leftPosition : rightPosition,
+            hasMoved: true
+          }
         }
 
-        if (this.isCellEmpty(previous, next, rightPosition)) {
-          return rightPosition
+        if (this.isCellEmpty(previous, rightPosition)) {
+          return {
+            position: rightPosition,
+            hasMoved: true
+          }
+
         }
 
-        if (this.isCellEmpty(previous, next, leftPosition)) {
-          return leftPosition
+        if (this.isCellEmpty(previous, leftPosition)) {
+          return {
+            position: leftPosition,
+            hasMoved: true
+          }
         }
       }
     }
 
+    return {
+      position: this.position,
+      hasMoved: false
+    }
 
-
-    return this.position
   }
 
 }
