@@ -30,8 +30,6 @@ export class Liquid extends Particle {
       const result = this.lookForX(grid, currentPositionY, highestXPosition?.direction);
       continueToLook = result.continueToLook
 
-
-
       if (result.continueToLook) {
         const { positionX, direction } = result;
         highestXPosition = { position: { x: positionX, y: currentPositionY }, direction };
@@ -70,7 +68,6 @@ export class Liquid extends Particle {
 
     const leftPosition = { y, x: this.farestPosition(grid, 'left', { y, x: this.position.x }) };
     const rightPosition = { y, x: this.farestPosition(grid, 'right', { y, x: this.position.x }) };
-
 
     if (leftPosition.x !== this.position.x && rightPosition.x !== this.position.x) {
       if (Math.random() >= 0.5) {

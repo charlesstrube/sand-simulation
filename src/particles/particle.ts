@@ -53,6 +53,8 @@ export class Particle {
       const newAxisPosition = position[axis] + sign * i
       if (grid.isCellEmpty({ ...position, [axis]: newAxisPosition })) {
         return newAxisPosition;
+      } else if (i === 1) {
+        return position[axis];
       }
     }
 
@@ -68,6 +70,7 @@ export class Particle {
     for (let i = 1; i <= Math.abs(velocity); i++) {
       const newAxisPosition = position[axis] + sign * i
       if (grid.isCellEmpty({ ...position, [axis]: newAxisPosition })) {
+
         previousAxisPosition = newAxisPosition;
       } else {
         return previousAxisPosition;

@@ -131,7 +131,7 @@ class Grid {
   addParticle(x: number, y: number, type: MATERIAL_TYPES) {
     for (let i = 0; i < SPAWN_AMOUNT_X; i++) {
       for (let j = 0; j < SPAWN_AMOUNT_Y; j++) {
-        const position = { x: x + i - 2, y: y + j - 2 }
+        const position = { x: x + i - Math.floor(SPAWN_AMOUNT_X / 2), y: y + j - Math.floor(SPAWN_AMOUNT_Y / 2) }
         if (!this.isOutOfBounds(position.x, position.y)) {
           this.createParticleFromPosition(position, type)
         }
