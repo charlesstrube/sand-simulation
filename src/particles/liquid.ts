@@ -4,28 +4,13 @@ import Grid from '../grid';
 import { Particle } from './particle';
 
 export class Liquid extends Particle {
-  velocity = { x: 1, y: 1 };
+  dispersionRate = 1;
+  weight = 1;
   constructor(x: number, y: number, type = PARTICLE_TYPES.LIQUID) {
     super(x, y, type);
   }
 
-  farestPosition(grid: Grid, direction: 'left' | 'right' | 'up' | 'down', position: Position) {
-    const axis = direction === 'left' || direction === 'right' ? 'x' : 'y';
-    const sign = direction === 'left' || direction === 'up' ? -1 : 1;
-    const velocityAxis = this.velocity[axis];
-    let previousAxisPosition = position[axis];
 
-    for (let i = 1; i <= Math.abs(velocityAxis); i++) {
-      const newAxisPosition = position[axis] + sign * i
-      if (this.isCellEmpty(grid, { ...position, [axis]: newAxisPosition })) {
-        previousAxisPosition = newAxisPosition;
-      } else {
-        return previousAxisPosition;
-      }
-    }
-
-    return previousAxisPosition;
-  }
 
   getNextStep(grid: Grid): { position: Position, hasMoved: boolean } {
 
@@ -41,7 +26,7 @@ export class Liquid extends Particle {
 
     let continueToLook = true;
 
-    for (let i = 0; i <= Math.abs(this.velocity.y) && continueToLook; i++) {
+    for (let i = 0; i <= Math.abs(this.weight) && continueToLook; i++) {
       const currentPositionY = this.position.y + i
       const result = this.lookForX(grid, currentPositionY, highestXPosition?.direction);
       continueToLook = result.continueToLook

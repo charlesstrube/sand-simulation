@@ -59,12 +59,13 @@ if (app) {
     y = Math.floor(event.offsetY / CELL_SIZE)
   })
 
-  const fps = 120;
+  const fps = 60;
   const fpsInterval = 1000 / fps
   let now = Date.now()
   let then = now
   let elapsed;
-  let hasSpwaned = false
+
+  const hasSpwaned = false
 
 
   // initialize the timer variables and start the animation
@@ -100,15 +101,15 @@ if (app) {
         newGrid.addNextGeneration()
 
         if (holding && x !== undefined && y !== undefined) {
+          // if (currentType === PARTICLE_TYPES.WATER) {
+          //   if (!hasSpwaned) {
+          //     newGrid.addParticle(x, y, currentType)
+          //     hasSpwaned = true
+          //   }
+          // } else {
           newGrid.addParticle(x, y, currentType)
-          if (currentType === PARTICLE_TYPES.WATER) {
-            if (!hasSpwaned) {
-              hasSpwaned = true
-            }
-          } else {
-            newGrid.addParticle(x, y, currentType)
 
-          }
+          // }
         }
 
 

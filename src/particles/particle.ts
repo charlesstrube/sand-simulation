@@ -5,7 +5,9 @@ import Grid from "../grid";
 export class Particle {
   position: { x: number, y: number };
   color?: string;
-  velocity: { x: number, y: number } = { x: 0, y: 0 };
+  dispersionRate = 0;
+  weight = 0;
+
   type: PARTICLE_TYPES = PARTICLE_TYPES.MOVABLE_SOLID;
   nextPosition: Position | undefined = undefined;
 
@@ -35,6 +37,24 @@ export class Particle {
 
   getColor() {
     return '#ffffff';
+  }
+
+  farestPosition(grid: Grid, direction: 'left' | 'right' | 'up' | 'down', position: Position) {
+    const axis = direction === 'left' || direction === 'right' ? 'x' : 'y';
+    const sign = direction === 'left' || direction === 'up' ? -1 : 1;
+    const velocity = axis === 'x' ? this.dispersionRate : this.weight;
+    let previousAxisPosition = position[axis];
+
+    for (let i = 1; i <= Math.abs(velocity); i++) {
+      const newAxisPosition = position[axis] + sign * i
+      if (this.isCellEmpty(grid, { ...position, [axis]: newAxisPosition })) {
+        previousAxisPosition = newAxisPosition;
+      } else {
+        return previousAxisPosition;
+      }
+    }
+
+    return previousAxisPosition;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

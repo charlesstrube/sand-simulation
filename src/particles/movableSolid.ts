@@ -4,14 +4,15 @@ import Grid from '../grid';
 import { Solid } from './solid';
 
 export class MovableSolid extends Solid {
-  velocity = { x: 1, y: 1 };
+  dispersionRate = 1;
+  weight = 1;
   constructor(x: number, y: number, type = PARTICLE_TYPES.MOVABLE_SOLID) {
     super(x, y, type);
   }
 
   getNextStep(previous: Grid): { position: Position, hasMoved: boolean } {
 
-    const downPosition = { ...this.position, y: this.position.y + this.velocity.y }
+    const downPosition = { ...this.position, y: this.position.y + this.weight }
     if (this.isCellEmpty(previous, downPosition)) {
       return {
         position: downPosition,
@@ -19,8 +20,8 @@ export class MovableSolid extends Solid {
       }
     }
 
-    const downLeftPosition = { y: this.position.y + this.velocity.y, x: this.position.x - this.velocity.x }
-    const downRightPosition = { y: this.position.y + this.velocity.y, x: this.position.x + this.velocity.x }
+    const downLeftPosition = { y: this.position.y + this.weight, x: this.position.x - this.dispersionRate }
+    const downRightPosition = { y: this.position.y + this.weight, x: this.position.x + this.dispersionRate }
 
     if (
       this.isCellEmpty(previous, downLeftPosition)
