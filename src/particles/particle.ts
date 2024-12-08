@@ -14,22 +14,23 @@ export class Particle {
     this.type = type;
   }
 
-  isCellEmpty(previous: Grid, next: Grid, position?: Position) {
+  isCellEmpty(previous: Grid, next: Grid, position: Position) {
     return Boolean(position
       && !next.isOutOfBounds(position.x, position.y)
       && !previous.getParticle(position.x, position.y)
-      && !next.getParticle(position.x, position.y))
+      && !next.getParticle(position.x, position.y));
   }
 
   isNextPositionReachable(previous: Grid, next: Grid, position: Position) {
-    for (let positionY = position.y; positionY >= this.position.y; positionY--) {
-      for (let positionX = position.x; positionX >= this.position.x; positionX--) {
-        if (this.isCellEmpty(previous, next, { y: position.y, x: position.x + positionX })) {
-          return true
-        }
+    const diffX = Math.abs(this.position.x - position.x);
+
+    for (let offsetX = 0; offsetX <= diffX; offsetX++) {
+      const checkX = this.position.x + (position.x > this.position.x ? offsetX : -offsetX);
+      if (this.isCellEmpty(previous, next, { x: checkX, y: position.y })) {
+        return true;
       }
     }
-    return false
+    return false;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
