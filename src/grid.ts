@@ -60,9 +60,18 @@ class Grid {
         down.color = previousCell.color;
       }
     }
-
-
   }
+
+  shuffleArray(array: unknown[]) {
+    const newArray = [...array]
+    for (let i = newArray.length - 1; i >= 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+    }
+
+    return newArray
+  }
+
 
   addNextGeneration(previousGrid: Grid) {
     this.colorDirection = previousGrid.colorDirection
@@ -75,7 +84,7 @@ class Grid {
 
     this.colorIndex = this.colorDirection ? previousGrid.colorIndex + .1 : previousGrid.colorIndex - .1
 
-    const cells = previousGrid.cells
+    const cells = this.shuffleArray(previousGrid.cells)
       .filter<Particle>((cell): cell is Particle => Boolean(cell))
 
 
@@ -83,8 +92,6 @@ class Grid {
       previousCell.nextPosition = previousCell.getNextStep(previousGrid, this)
       this.commitChanges(previousCell)
     })
-
-
   }
 
 
