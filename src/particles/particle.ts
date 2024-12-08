@@ -12,6 +12,7 @@ export class Particle {
   constructor(x: number, y: number, type: PARTICLE_TYPES) {
     this.position = { x, y };
     this.type = type;
+    this.color = this.getColor();
   }
 
   isCellEmpty(grid: Grid, position: Position) {
@@ -30,6 +31,10 @@ export class Particle {
       }
     }
     return false;
+  }
+
+  getColor() {
+    return '#ffffff';
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

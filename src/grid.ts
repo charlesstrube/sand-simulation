@@ -1,13 +1,10 @@
 import { HEIGHT, PARTICLE_TYPES, Position, WIDTH } from "./constants";
-import { createParticleFromPosition, getSandColor, getWaterColor } from "./helpers";
+import { createParticleFromPosition } from "./helpers";
 import { Particle } from "./particles/particle";
 
 
 
 class Grid {
-
-  colorIndex = 0;
-  colorDirection = true;
 
   cells: (Particle | undefined)[] = [];
   constructor(height: number, width: number) {
@@ -35,11 +32,6 @@ class Grid {
     }
 
     return this.cells[index]
-  }
-
-  createParticleFromIndex(index: number, type: PARTICLE_TYPES): Particle {
-    const position = this.getPositionFromIndex(index)
-    return this.createParticleFromPosition(position, type)
   }
 
   deleteParticle(x: number, y: number) {
@@ -71,8 +63,6 @@ class Grid {
     }
   }
 
-
-
   shuffleArray(array: unknown[]) {
     const newArray = [...array]
     for (let i = newArray.length - 1; i >= 0; i--) {
@@ -85,15 +75,6 @@ class Grid {
 
 
   addNextGeneration() {
-    if (this.colorIndex >= 100) {
-      this.colorDirection = false
-    }
-    if (this.colorIndex < 0) {
-      this.colorDirection = true
-    }
-
-    this.colorIndex = this.colorDirection ? this.colorIndex + .1 : this.colorIndex - .1
-
     this.shuffleArray(this.cells)
       .filter<Particle>((cell): cell is Particle => Boolean(cell))
       .forEach((cell) => {
@@ -108,36 +89,23 @@ class Grid {
     return x < 0 || x > WIDTH - 1 || y < 0 || y > HEIGHT - 1
   }
 
-  getColor(type: PARTICLE_TYPES) {
-    switch (type) {
-      case PARTICLE_TYPES.SAND:
-        return getSandColor(this.colorIndex / 100)
-      case PARTICLE_TYPES.WATER:
-        return getWaterColor(this.colorIndex / 100)
-      default:
-        return '#ffffff'
-    }
-  }
+
 
   addParticle(x: number, y: number, type: PARTICLE_TYPES) {
     if (this.isOutOfBounds(x, y)) {
       return
     }
-    const right = this.getNeighborPosition(x + 1, y);
-    const left = this.getNeighborPosition(x - 1, y);
-    const currentCell = this.createParticleFromPosition({ x, y }, type);
-    const color = this.getColor(type)
+    // const right = this.getNeighborPosition(x + 1, y);
+    // const left = this.getNeighborPosition(x - 1, y);
+    this.createParticleFromPosition({ x, y }, type);
 
-    currentCell.color = color;
 
-    if (left) {
-      const particle = this.createParticleFromPosition(left, type);
-      particle.color = color;
-    }
-    if (right) {
-      const particle = this.createParticleFromPosition(right, type);
-      particle.color = color;
-    }
+    // if (left) {
+    //   const particle = this.createParticleFromPosition(left, type);
+    // }
+    // if (right) {
+    //   const particle = this.createParticleFromPosition(right, type);
+    // }
   }
 
   getParticle(x: number, y: number) {
