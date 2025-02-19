@@ -57,8 +57,9 @@ export class Liquid extends Particle {
     continueToLook: false;
   } {
     if (direction) {
-      const position = { y, x: this.closestPosition(grid, direction, { y, x: this.position.x }) };
-      if (position.x !== this.position.x) {
+      const x = this.closestPosition(grid, direction, { y, x: this.position.x }, this.dispersionRate)
+      if (x !== undefined && x !== this.position.x) {
+        const position = { y, x };
         return { continueToLook: true, positionX: position.x, direction };
       }
 
